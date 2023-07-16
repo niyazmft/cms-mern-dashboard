@@ -47,7 +47,7 @@ const OverviewChart = ({ isDashboard = false, view }) => {
         display="flex"
         justifyContent="center"
         alignItems="center"
-        height="75vh"
+        height={isDashboard ? "100%" : "75vh"}
       >
         <CircularProgress />
       </Box>

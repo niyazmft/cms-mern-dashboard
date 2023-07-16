@@ -13,7 +13,7 @@ const BreakdownChart = ({ isDashboard = false }) => {
         display="flex"
         justifyContent="center"
         alignItems="center"
-        height="75vh"
+        height={isDashboard? "90%" : "75vh"}
       >
         <CircularProgress />
       </Box>
