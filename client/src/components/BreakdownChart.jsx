@@ -7,7 +7,17 @@ const BreakdownChart = ({ isDashboard = false }) => {
   const { data, isLoading } = useGetSalesQuery();
   const theme = useTheme();
 
-  if (isLoading || !data) return <CircularProgress />;
+  if (isLoading || !data)
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="75vh"
+      >
+        <CircularProgress />
+      </Box>
+    );
 
   const colors = [
     theme.palette.secondary[500],

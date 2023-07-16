@@ -2,14 +2,14 @@ import React, { useMemo } from "react";
 import { ResponsiveLine } from "@nivo/line";
 import { useTheme } from "@mui/material";
 import { useGetSalesQuery } from "state/api";
-import { CircularProgress } from "@mui/material";
+import { CircularProgress, Box } from "@mui/material";
 
 const OverviewChart = ({ isDashboard = false, view }) => {
   const theme = useTheme();
   const { data, isLoading } = useGetSalesQuery();
 
   const [totalSalesLine, totalUnitsLine] = useMemo(() => {
-    if (!data) return [];;
+    if (!data) return [];
     const { monthlyData } = data;
     const totalSalesLine = {
       id: "totalSales",
@@ -38,10 +38,20 @@ const OverviewChart = ({ isDashboard = false, view }) => {
       },
       { sales: 0, units: 0 }
     );
-    return [[totalSalesLine],[totalUnitsLine]]
+    return [[totalSalesLine], [totalUnitsLine]];
   }, [data]); //eslint-disable-line react-hooks/exhaustive-deps
 
-  if (!data || isLoading) return <CircularProgress />;
+  if (!data || isLoading)
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="75vh"
+      >
+        <CircularProgress />
+      </Box>
+    );
 
   return (
     <ResponsiveLine
@@ -90,7 +100,7 @@ const OverviewChart = ({ isDashboard = false, view }) => {
       }}
       yFormat=" >-.2f"
       curve="catmullRom"
-      enableArea ={isDashboard}
+      enableArea={isDashboard}
       axisTop={null}
       axisRight={null}
       axisBottom={{

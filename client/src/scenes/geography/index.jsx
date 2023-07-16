@@ -95,7 +95,14 @@ const Geography = () => {
             ]}
           />
         ) : (
-          <CircularProgress />
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="75vh"
+          >
+            <CircularProgress />
+          </Box>
         )}
       </Box>
     </Box>

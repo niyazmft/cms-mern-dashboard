@@ -75,7 +75,9 @@ const Product = ({
         <CardContent>
           <Typography>id: {_id}</Typography>
           <Typography>Supply Left: {supply}</Typography>
-          <Typography>Yearly Sales This Year: {stat.yearlySalesTotal}</Typography>
+          <Typography>
+            Yearly Sales This Year: {stat.yearlySalesTotal}
+          </Typography>
           <Typography>
             Yearly Units Sold This Year: {stat.yearlyTotalSoldUnits}
           </Typography>
@@ -94,7 +96,14 @@ const Products = () => {
       <Header title="PRODUCTS" subtitle="See your list of products." />
       {isLoading ? (
         <Box display="flex" justifyContent="center" mt={4}>
-          <CircularProgress />
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="75vh"
+          >
+            <CircularProgress />
+          </Box>
         </Box>
       ) : (
         <Box

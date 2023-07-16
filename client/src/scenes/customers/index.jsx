@@ -66,9 +66,14 @@ const Customers = () => {
     <Box m="1.5rem 2.5rem">
       <Header title="CUSTOMERS" subtitle="List of Customers." />
       {isLoading ? (
-        <div>
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="75vh"
+        >
           <CircularProgress />
-        </div>
+        </Box>
       ) : (
         <Box
           mt="40px"

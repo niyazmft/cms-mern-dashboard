@@ -66,9 +66,14 @@ const Admin = () => {
     <Box m="1.5rem 2.5rem">
       <Header title="ADMINS" subtitle="Managing Admins" />
       {isLoading ? (
-        <div>
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="75vh"
+        >
           <CircularProgress />
-        </div>
+        </Box>
       ) : (
         <Box
           mt="40px"

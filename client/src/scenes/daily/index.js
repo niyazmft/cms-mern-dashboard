@@ -16,7 +16,12 @@ const Daily = () => {
     return (
       <Box m="1.5rem 2.5rem">
         <Header title="DAILY SALES" subtitle="Chart of Daily Sales" />
-        <Box height="75vh">
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="75vh"
+        >
           <CircularProgress />
         </Box>
       </Box>
@@ -36,8 +41,16 @@ const Daily = () => {
       return result;
     },
     {
-      totalSalesLine: { id: "totalSales", color: theme.palette.secondary.main, data: [] },
-      totalUnitsLine: { id: "totalUnits", color: theme.palette.secondary[600], data: [] },
+      totalSalesLine: {
+        id: "totalSales",
+        color: theme.palette.secondary.main,
+        data: [],
+      },
+      totalUnitsLine: {
+        id: "totalUnits",
+        color: theme.palette.secondary[600],
+        data: [],
+      },
     }
   );
 
@@ -72,7 +85,10 @@ const Daily = () => {
             axis: {
               domain: { line: { stroke: theme.palette.secondary[200] } },
               legend: { text: { fill: theme.palette.secondary[200] } },
-              ticks: { line: { stroke: theme.palette.secondary[200], strokeWidth: 1 }, text: { fill: theme.palette.secondary[200] } },
+              ticks: {
+                line: { stroke: theme.palette.secondary[200], strokeWidth: 1 },
+                text: { fill: theme.palette.secondary[200] },
+              },
             },
             legends: { text: { fill: theme.palette.secondary[200] } },
             tooltip: { container: { color: theme.palette.primary.main } },
@@ -80,7 +96,13 @@ const Daily = () => {
           colors={{ datum: "color" }}
           margin={{ top: 50, right: 50, bottom: 70, left: 60 }}
           xScale={{ type: "point" }}
-          yScale={{ type: "linear", min: "auto", max: "auto", stacked: false, reverse: false }}
+          yScale={{
+            type: "linear",
+            min: "auto",
+            max: "auto",
+            stacked: false,
+            reverse: false,
+          }}
           yFormat=" >-.2f"
           curve="catmullRom"
           axisTop={null}
@@ -126,7 +148,15 @@ const Daily = () => {
               symbolSize: 12,
               symbolShape: "circle",
               symbolBorderColor: "rgba(0, 0, 0, .5)",
-              effects: [{ on: "hover", style: { itemBackground: "rgba(0, 0, 0, .03)", itemOpacity: 1 } }],
+              effects: [
+                {
+                  on: "hover",
+                  style: {
+                    itemBackground: "rgba(0, 0, 0, .03)",
+                    itemOpacity: 1,
+                  },
+                },
+              ],
             },
           ]}
         />

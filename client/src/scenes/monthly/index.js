@@ -18,12 +18,18 @@ const Monthly = () => {
       {
         id: "totalSales",
         color: theme.palette.secondary.main,
-        data: monthlyData.map(({ month, totalSales }) => ({ x: month, y: totalSales })),
+        data: monthlyData.map(({ month, totalSales }) => ({
+          x: month,
+          y: totalSales,
+        })),
       },
       {
         id: "totalUnits",
         color: theme.palette.secondary[600],
-        data: monthlyData.map(({ month, totalUnits }) => ({ x: month, y: totalUnits })),
+        data: monthlyData.map(({ month, totalUnits }) => ({
+          x: month,
+          y: totalUnits,
+        })),
       },
     ];
   }, [data, theme.palette.secondary.main, theme.palette.secondary[600]]);
@@ -39,7 +45,13 @@ const Monthly = () => {
               axis: {
                 domain: { line: { stroke: theme.palette.secondary[200] } },
                 legend: { text: { fill: theme.palette.secondary[200] } },
-                ticks: { line: { stroke: theme.palette.secondary[200], strokeWidth: 1 }, text: { fill: theme.palette.secondary[200] } },
+                ticks: {
+                  line: {
+                    stroke: theme.palette.secondary[200],
+                    strokeWidth: 1,
+                  },
+                  text: { fill: theme.palette.secondary[200] },
+                },
               },
               legends: { text: { fill: theme.palette.secondary[200] } },
               tooltip: { container: { color: theme.palette.primary.main } },
@@ -47,7 +59,13 @@ const Monthly = () => {
             colors={{ datum: "color" }}
             margin={{ top: 50, right: 50, bottom: 70, left: 60 }}
             xScale={{ type: "point" }}
-            yScale={{ type: "linear", min: "auto", max: "auto", stacked: false, reverse: false }}
+            yScale={{
+              type: "linear",
+              min: "auto",
+              max: "auto",
+              stacked: false,
+              reverse: false,
+            }}
             yFormat=" >-.2f"
             curve="catmullRom"
             axisTop={null}
@@ -93,12 +111,27 @@ const Monthly = () => {
                 symbolSize: 12,
                 symbolShape: "circle",
                 symbolBorderColor: "rgba(0, 0, 0, .5)",
-                effects: [{ on: "hover", style: { itemBackground: "rgba(0, 0, 0, .03)", itemOpacity: 1 } }],
+                effects: [
+                  {
+                    on: "hover",
+                    style: {
+                      itemBackground: "rgba(0, 0, 0, .03)",
+                      itemOpacity: 1,
+                    },
+                  },
+                ],
               },
             ]}
           />
         ) : (
-          <CircularProgress />
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            height="75vh"
+          >
+            <CircularProgress />
+          </Box>
         )}
       </Box>
     </Box>
