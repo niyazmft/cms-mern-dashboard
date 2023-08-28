@@ -4,6 +4,16 @@ import { useTheme } from "@mui/material";
 import { useGetSalesQuery } from "state/api";
 import { CircularProgress, Box } from "@mui/material";
 
+const formatValue = (value) => {
+  const suffixes = ["", "k", "m", "b", "t"];
+  const tier = (Math.log10(value) / 3) | 0;
+  if (tier === 0) return value;
+  const suffix = suffixes[tier];
+  const scale = 10 ** (tier * 3);
+  const scaledValue = value / scale;
+  return scaledValue.toFixed(2) + suffix;
+};
+
 const OverviewChart = ({ isDashboard = false, view }) => {
   const theme = useTheme();
   const { data, isLoading } = useGetSalesQuery();
@@ -12,12 +22,12 @@ const OverviewChart = ({ isDashboard = false, view }) => {
     if (!data) return [];
     const { monthlyData } = data;
     const totalSalesLine = {
-      id: "totalSales",
+      id: "Total Sales",
       color: theme.palette.secondary.main,
       data: [],
     };
     const totalUnitsLine = {
-      id: "totalUnits",
+      id: "Total Units",
       color: theme.palette.secondary[600],
       data: [],
     };
@@ -98,7 +108,7 @@ const OverviewChart = ({ isDashboard = false, view }) => {
         stacked: false,
         reverse: false,
       }}
-      yFormat=" >-.2f"
+      yFormat={(value) => formatValue(value)}
       curve="catmullRom"
       enableArea={isDashboard}
       axisTop={null}
@@ -126,6 +136,7 @@ const OverviewChart = ({ isDashboard = false, view }) => {
           : `Total ${view === "sales" ? "Revenue" : "Units"} for Year`,
         legendOffset: -60,
         legendPosition: "middle",
+        format: (value) => formatValue(value),
       }}
       enableGridX={false}
       enableGridY={false}

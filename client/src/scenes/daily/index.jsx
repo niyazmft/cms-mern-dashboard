@@ -6,9 +6,25 @@ import { useGetSalesQuery } from "state/api";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
+const formatValue = (value) => {
+  const suffixes = ["", "k", "m", "b", "t"];
+  const tier = (Math.log10(value) / 3) | 0;
+  if (tier === 0) return value;
+  const suffix = suffixes[tier];
+  const scale = 10 ** (tier * 3);
+  const scaledValue = value / scale;
+  return scaledValue.toFixed(2) + suffix;
+};
+
 const Daily = () => {
-  const [startDate, setStartDate] = useState(new Date("2021-02-01"));
-  const [endDate, setEndDate] = useState(new Date("2021-03-01"));
+  const [startDate, setStartDate] = useState(() => {
+    const today = new Date();
+    const thirtyDaysAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000);
+    return thirtyDaysAgo;
+  });
+
+  const [endDate, setEndDate] = useState(new Date());
+
   const { data } = useGetSalesQuery();
   const theme = useTheme();
 
@@ -42,23 +58,53 @@ const Daily = () => {
     },
     {
       totalSalesLine: {
-        id: "totalSales",
+        id: "Sales",
         color: theme.palette.secondary.main,
         data: [],
       },
       totalUnitsLine: {
-        id: "totalUnits",
+        id: "Units",
         color: theme.palette.secondary[600],
         data: [],
       },
     }
   );
 
+  const handleDateSelection = (selectedRange) => {
+    const today = new Date();
+    switch (selectedRange) {
+      case "last7days":
+        setStartDate(new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000));
+        setEndDate(today);
+        break;
+      case "last30days":
+        setStartDate(new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000));
+        setEndDate(today);
+        break;
+      case "last3months":
+        setStartDate(new Date(today.getFullYear(), today.getMonth() - 3, 1));
+        setEndDate(today);
+        break;
+      case "yeartodate":
+        setStartDate(new Date(today.getFullYear(), 0, 1));
+        setEndDate(today);
+        break;
+      default:
+        // Do nothing for unknown cases
+        break;
+    }
+  };
+
+  // CustomInput component to style the DatePicker input
+  const CustomInput = ({ value, onClick }) => (
+    <button onClick={onClick}>{value}</button>
+  );
+
   return (
     <Box m="1.5rem 2.5rem">
       <Header title="DAILY SALES" subtitle="Chart of Daily Sales" />
       <Box height="75vh">
-        <Box display="flex" justifyContent="flex-end">
+        <Box display="flex" justifyContent="flex-end" gap="2px">
           <Box>
             <DatePicker
               selected={startDate}
@@ -66,6 +112,9 @@ const Daily = () => {
               selectsStart
               startDate={startDate}
               endDate={endDate}
+              dateFormat="dd/MM/yyyy"
+              popperPlacement="bottom-end"
+              customInput={<CustomInput />}
             />
           </Box>
           <Box>
@@ -76,7 +125,24 @@ const Daily = () => {
               startDate={startDate}
               endDate={endDate}
               minDate={startDate}
+              dateFormat="dd/MM/yyyy"
+              popperPlacement="bottom-end"
+              customInput={<CustomInput />}
             />
+          </Box>
+          <Box marginLeft={2}>
+            <button onClick={() => handleDateSelection("last7days")}>
+              Last 7 Days
+            </button>
+            <button onClick={() => handleDateSelection("last30days")}>
+              Last 30 Days
+            </button>
+            <button onClick={() => handleDateSelection("last3months")}>
+              Last 3 Months
+            </button>
+            <button onClick={() => handleDateSelection("yeartodate")}>
+              Year to Date
+            </button>
           </Box>
         </Box>
         <ResponsiveLine
@@ -103,7 +169,7 @@ const Daily = () => {
             stacked: false,
             reverse: false,
           }}
-          yFormat=" >-.2f"
+          yFormat={(value) => formatValue(value)}
           curve="catmullRom"
           axisTop={null}
           axisRight={null}

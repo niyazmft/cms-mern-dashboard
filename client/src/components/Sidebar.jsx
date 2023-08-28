@@ -1,4 +1,4 @@
-import React, { Profiler } from "react";
+import React from "react";
 import {
   Box,
   Divider,
@@ -27,10 +27,9 @@ import {
   AdminPanelSettingsOutlined,
   TrendingUpOutlined,
   PieChartOutlined,
-  Home,
 } from "@mui/icons-material";
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 import FlexBetween from "./FlexBetween";
 import profilImage from "assets/profile.png";
 
@@ -80,7 +79,7 @@ const navItems = [
     icon: <PieChartOutlined />,
   },
   {
-    text: "Managmenet",
+    text: "Management",
     icon: null,
   },
   {
@@ -128,13 +127,20 @@ const Sidebar = ({
             },
           }}
         >
-          <Box width="100%" sx={{ overflowY: "auto" }}> {/* Add overflowY and set to "auto" for scrollable contents */}
+          <Box width="100%" sx={{ overflowY: "auto" }}>
+            {" "}
+            {/* Add overflowY and set to "auto" for scrollable contents */}
             <Box m="1.5rem 2rem 2rem 3rem">
               <FlexBetween color={theme.palette.secondary.main}>
                 <Box display="flex" alignItems="center" gap="0.5rem">
-                  <Typography variant="h4" fontWeight="bold">
-                    ECOMVISION
-                  </Typography>
+                  <Link
+                    to="/dashboard"
+                    style={{ textDecoration: "none", color: "inherit" }}
+                  >
+                    <Typography variant="h4" fontWeight="bold">
+                      EBISU HUB
+                    </Typography>
+                  </Link>
                 </Box>
                 {!isNonMobile && (
                   <IconButton onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
@@ -192,7 +198,16 @@ const Sidebar = ({
               })}
             </List>
           </Box>
-          <Box position="sticky" bottom={0} py={2} px={3} backgroundColor={theme.palette.background.alt} zIndex={1}> {/* Fix user information box to the bottom */}
+          <Box
+            position="sticky"
+            bottom={0}
+            py={2}
+            px={3}
+            backgroundColor={theme.palette.background.alt}
+            zIndex={1}
+          >
+            {" "}
+            {/* Fix user information box to the bottom */}
             <Divider />
             <FlexBetween textTransform="none" gap="1rem" m="1.5rem 2rem 0 3rem">
               <Box

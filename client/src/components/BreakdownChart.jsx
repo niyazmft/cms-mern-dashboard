@@ -7,17 +7,18 @@ const BreakdownChart = ({ isDashboard = false }) => {
   const { data, isLoading } = useGetSalesQuery();
   const theme = useTheme();
 
-  if (isLoading || !data)
+  if (isLoading || !data) {
     return (
       <Box
         display="flex"
         justifyContent="center"
         alignItems="center"
-        height={isDashboard? "90%" : "75vh"}
+        height={isDashboard ? "90%" : "75vh"}
       >
         <CircularProgress />
       </Box>
     );
+  }
 
   const colors = [
     theme.palette.secondary[500],
@@ -26,10 +27,31 @@ const BreakdownChart = ({ isDashboard = false }) => {
     theme.palette.secondary[500],
   ];
 
+  const capitalize = (str) =>
+    str.replace(/\b\w/g, (char) => char.toUpperCase());
+
+  // Helper function to format number with suffix
+  const formatNumberWithSuffix = (num, isDashboard) => {
+    if (isDashboard) {
+      const suffixes = ["", "K", "M", "B", "T"];
+      const suffixNum = Math.floor(("" + num).length / 3);
+      let shortValue = parseFloat(
+        (suffixNum !== 0 ? num / Math.pow(1000, suffixNum) : num).toPrecision(2)
+      );
+      if (shortValue % 1 !== 0) {
+        shortValue = shortValue.toFixed(1);
+      }
+      return shortValue + suffixes[suffixNum];
+    } else {
+      // Add thousand delimiter
+      return num.toLocaleString();
+    }
+  };
+
   const formattedData = Object.entries(data.salesByCategory).map(
     ([category, sales], i) => ({
       id: category,
-      label: category,
+      label: capitalize(category),
       value: sales,
       color: colors[i],
     })
@@ -47,36 +69,38 @@ const BreakdownChart = ({ isDashboard = false }) => {
     activeOuterRadiusOffset: 8,
     borderWidth: 1,
     borderColor: { from: "color", modifiers: [["darker", 0.2]] },
-    enableArcLabels: !isDashboard,
     arcLinkLabelsTextColor: theme.palette.secondary[200],
     arcLinkLabelsThickness: 2,
     arcLinkLabelsColor: { from: "color" },
     arcLabelsSkipAngle: 10,
     arcLabelsTextColor: { from: "color", modifiers: [["darker", 2]] },
-    legends: [
-      {
-        anchor: "bottom",
-        direction: "row",
-        translateX: isDashboard ? 20 : 0,
-        translateY: isDashboard ? 50 : 56,
-        itemsSpacing: 0,
-        itemWidth: 85,
-        itemHeight: 18,
-        itemTextColor: "#999",
-        itemDirection: "left-to-right",
-        itemOpacity: 1,
-        symbolSize: 18,
-        symbolShape: "circle",
-        effects: [
+    enableArcLinkLabels: !isDashboard, // Show arc link label lines only if it's not a dashboard
+    legends: isDashboard // Show legends only if it's a dashboard
+      ? [
           {
-            on: "hover",
-            style: {
-              itemTextColor: theme.palette.primary[500],
-            },
+            anchor: "bottom",
+            direction: "row",
+            translateX: 20,
+            translateY: 50,
+            itemsSpacing: 0,
+            itemWidth: 85,
+            itemHeight: 18,
+            itemTextColor: "#999",
+            itemDirection: "left-to-right",
+            itemOpacity: 1,
+            symbolSize: 18,
+            symbolShape: "circle",
+            effects: [
+              {
+                on: "hover",
+                style: {
+                  itemTextColor: theme.palette.primary[500],
+                },
+              },
+            ],
           },
-        ],
-      },
-    ],
+        ]
+      : undefined,
   };
 
   return (
@@ -102,7 +126,8 @@ const BreakdownChart = ({ isDashboard = false }) => {
         }}
       >
         <Typography variant="h6">
-          {!isDashboard && "Total:"} ${data.yearlySalesTotal}
+          {!isDashboard && "Total: "} $
+          {formatNumberWithSuffix(data.yearlySalesTotal, isDashboard)}
         </Typography>
       </Box>
     </Box>

@@ -16,7 +16,7 @@ const Monthly = () => {
 
     return [
       {
-        id: "totalSales",
+        id: "Total Sales",
         color: theme.palette.secondary.main,
         data: monthlyData.map(({ month, totalSales }) => ({
           x: month,
@@ -24,7 +24,7 @@ const Monthly = () => {
         })),
       },
       {
-        id: "totalUnits",
+        id: "Total Units",
         color: theme.palette.secondary[600],
         data: monthlyData.map(({ month, totalUnits }) => ({
           x: month,
