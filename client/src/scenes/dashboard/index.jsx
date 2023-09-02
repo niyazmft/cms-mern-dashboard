@@ -27,7 +27,7 @@ const Dashboard = () => {
   const { data, isLoading } = useGetDashboardQuery();
 
   const columns = [
-    { field: "_id", headerName: "ID", flex: 1 },
+    { field: "_id", headerName: "Order Number", flex: 1 },
     { field: "userId", headerName: "User ID", flex: 1 },
     {
       field: "createdAt",
@@ -52,7 +52,7 @@ const Dashboard = () => {
     },
     {
       field: "products",
-      headerName: "# of Products",
+      headerName: "Quantity",
       flex: 0.5,
       sortable: false,
       renderCell: (params) => params.value.length,

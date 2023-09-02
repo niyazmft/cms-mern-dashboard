@@ -107,10 +107,10 @@ const Customers = () => {
           <DataGrid
             rows={formattedData}
             columns={[
-              { field: "id", headerName: "ID", flex: 1 },
+              { field: "id", headerName: "Customer ID", flex: 1 },
               { field: "name", headerName: "Name", flex: 0.5 },
               { field: "email", headerName: "Email", flex: 1 },
-              { field: "phoneNumber", headerName: "Phone Number", flex: 0.5 },
+              { field: "phoneNumber", headerName: "Phone Number", flex: 0.75 },
               { field: "country", headerName: "Country", flex: 1 },
               { field: "occupation", headerName: "Occupation", flex: 1 },
               { field: "role", headerName: "Role", flex: 0.5 },
