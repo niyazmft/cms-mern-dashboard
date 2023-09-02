@@ -12,8 +12,11 @@ import {
   CardActions,
   Button,
   TextField,
+  IconButton,
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
+import KeyboardArrowRightIcon from "@mui/icons-material/KeyboardArrowRight";
+import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 
 import Header from "components/Header";
 import { DataGrid } from "@mui/x-data-grid";
@@ -27,9 +30,11 @@ const Products = () => {
   const [isEditDialogOpen, setEditDialogOpen] = useState(false);
   const [updatedImages, setUpdatedImages] = useState([]);
   const [newImageUrl, setNewImageUrl] = useState("");
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   useEffect(() => {
     if (data) {
+      // Format the product data
       const formattedProducts = data.map((product) => ({
         id: product._id,
         name: product.name,
@@ -45,13 +50,28 @@ const Products = () => {
     }
   }, [data]);
 
-  const secondaryMainColor = theme.palette.secondary.main;
+  useEffect(() => {
+    // Add keyboard event listener for arrow keys
+    const handleArrowKeys = (e) => {
+      if (e.key === "ArrowLeft" && currentImageIndex > 0) {
+        setCurrentImageIndex(currentImageIndex - 1);
+      } else if (
+        e.key === "ArrowRight" &&
+        currentImageIndex < selectedProduct.imageUrl.length - 1
+      ) {
+        setCurrentImageIndex(currentImageIndex + 1);
+      }
+    };
 
-  const renderRatingCell = (params) => (
-    <Box display="flex" alignItems="center">
-      <Rating value={params.value} readOnly />
-    </Box>
-  );
+    window.addEventListener("keydown", handleArrowKeys);
+
+    // Cleanup the event listener when the component unmounts
+    return () => {
+      window.removeEventListener("keydown", handleArrowKeys);
+    };
+  }, [currentImageIndex, selectedProduct]);
+
+  const secondaryMainColor = theme.palette.secondary.main;
 
   const handleRowClick = (params) => {
     const selectedProductId = params.id;
@@ -61,6 +81,7 @@ const Products = () => {
     setSelectedProduct(selectedProductData);
     setEditDialogOpen(false);
     setUpdatedImages([]);
+    setCurrentImageIndex(0);
   };
 
   const handleCloseDialog = () => {
@@ -71,6 +92,21 @@ const Products = () => {
 
   const handleOpenEditDialog = () => {
     setEditDialogOpen(true);
+    setCurrentImageIndex(0);
+  };
+
+  const handleNextImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex < selectedProduct.imageUrl.length - 1
+        ? prevIndex + 1
+        : prevIndex
+    );
+  };
+
+  const handlePreviousImage = () => {
+    setCurrentImageIndex((prevIndex) =>
+      prevIndex > 0 ? prevIndex - 1 : prevIndex
+    );
   };
 
   const handleAddNewImage = () => {
@@ -92,6 +128,7 @@ const Products = () => {
     setSelectedProduct(updatedProduct);
     setEditDialogOpen(false);
     setUpdatedImages([]);
+    setCurrentImageIndex(0);
   };
 
   return (
@@ -169,7 +206,11 @@ const Products = () => {
                 field: "rating",
                 headerName: "Rating",
                 flex: 0.5,
-                renderCell: renderRatingCell,
+                renderCell: (params) => (
+                  <Box display="flex" alignItems="center">
+                    <Rating value={params.value} readOnly />
+                  </Box>
+                ),
               },
             ]}
             onRowClick={handleRowClick}
@@ -188,18 +229,14 @@ const Products = () => {
               <CardContent>
                 <div
                   style={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    height: "300px",
+                    position: "relative",
                     width: "360px",
+                    height: "300px",
                     margin: "0 auto",
                   }}
                 >
                   <img
-                    src={
-                      "https://images.pexels.com/photos/2529148/pexels-photo-2529148.jpeg"
-                    }
+                    src={selectedProduct.imageUrl[currentImageIndex]}
                     alt={selectedProduct.name}
                     style={{
                       width: "100%",
@@ -207,6 +244,30 @@ const Products = () => {
                       objectFit: "cover",
                     }}
                   />
+                  <IconButton
+                    onClick={handlePreviousImage}
+                    sx={{
+                      color: secondaryMainColor,
+                      position: "absolute",
+                      top: "50%",
+                      left: "-38px",
+                      transform: "translateY(-50%)",
+                    }}
+                  >
+                    <KeyboardArrowLeftIcon fontSize="large" />
+                  </IconButton>
+                  <IconButton
+                    onClick={handleNextImage}
+                    sx={{
+                      color: secondaryMainColor,
+                      position: "absolute",
+                      top: "50%",
+                      right: "-38px",
+                      transform: "translateY(-50%)",
+                    }}
+                  >
+                    <KeyboardArrowRightIcon fontSize="large" />
+                  </IconButton>
                 </div>
                 <Typography
                   variant="h5"
@@ -260,9 +321,7 @@ const Products = () => {
                   {selectedProduct.stat.yearlyTotalSoldUnits}
                 </Typography>
               </CardContent>
-
               <CardContent>
-                {/* Allow adding new images */}
                 {isEditDialogOpen && (
                   <div>
                     <TextField

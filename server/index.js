@@ -9,6 +9,7 @@ import clientRoutes from "./routes/client.js";
 import generalRoutes from "./routes/general.js";
 import managementRoutes from "./routes/management.js";
 import salesRoutes from "./routes/sales.js";
+import productsRoutes from "./routes/product.js";
 
 // Data Imports
 import User from "./models/User.js";
@@ -43,6 +44,7 @@ app.use("/client", clientRoutes);
 app.use("/general", generalRoutes);
 app.use("/management", managementRoutes);
 app.use("/sales", salesRoutes);
+app.use("/products", productsRoutes);
 
 // Mongoose Setup
 const PORT = process.env.PORT || 9000;
@@ -50,6 +52,7 @@ mongoose
   .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
+    w: "majority",
   })
   .then(() => {
     app.listen(PORT, () => console.log(`Server Port: ${PORT}`));
