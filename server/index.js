@@ -57,7 +57,7 @@ app.use("/sales", salesRoutes);
 app.use("/products", productsRoutes);
 
 // Set up the MongoDB connection
-const PORT = process.env.MONGO_PORT || 9000;
+const MONGo_PORT = process.env.PORT || 9000;
 mongoose
   .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
@@ -65,7 +65,7 @@ mongoose
     w: "majority",
   })
   .then(() => {
-    console.log(`MongoDB connected and Server Port: ${PORT}`);
+    console.log(`MongoDB connected and Server Port: ${MONGo_PORT}`);
 
     // Insert initial data if needed
     // Product.insertMany(dataProduct);
