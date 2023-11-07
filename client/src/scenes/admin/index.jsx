@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Box, useTheme, CircularProgress } from "@mui/material";
-import { useGetAdminsQuery } from "state/api";
+import { useGetAdminsQuery } from "state/api/mongoDBApi";
 import Header from "components/Header";
 import { DataGrid } from "@mui/x-data-grid";
 import axios from "axios";

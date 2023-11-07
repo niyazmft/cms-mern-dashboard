@@ -2,7 +2,7 @@ import React from "react";
 import { Box, CircularProgress, useTheme } from "@mui/material";
 import Header from "components/Header";
 import { ResponsiveLine } from "@nivo/line";
-import { useGetSalesQuery } from "state/api";
+import { useGetSalesQuery } from "state/api/mongoDBApi";
 import "react-datepicker/dist/react-datepicker.css";
 
 const Monthly = () => {

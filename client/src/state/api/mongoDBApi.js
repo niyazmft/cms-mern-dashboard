@@ -1,7 +1,9 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
-export const api = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: process.env.REACT_APP_BASE_URL }),
+export const apiMongoDB = createApi({
+  baseQuery: fetchBaseQuery({
+    baseUrl: process.env.REACT_APP_MONGODB_BASE_URL,
+  }),
   reducerPath: "adminApi",
   tagTypes: [
     "User",
@@ -68,4 +70,4 @@ export const {
   useGetAdminsQuery,
   useGetUserPerformanceQuery,
   useGetDashboardQuery,
-} = api;
+} = apiMongoDB;

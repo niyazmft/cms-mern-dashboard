@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, useTheme, CircularProgress } from "@mui/material";
-import { useGetUserPerformanceQuery } from "state/api";
+import { useGetUserPerformanceQuery } from "state/api/mongoDBApi";
 import Header from "components/Header";
 import { DataGrid } from "@mui/x-data-grid";
 import { useSelector } from "react-redux/es/hooks/useSelector";

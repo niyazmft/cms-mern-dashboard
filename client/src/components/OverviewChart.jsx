@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { ResponsiveLine } from "@nivo/line";
 import { useTheme } from "@mui/material";
-import { useGetSalesQuery } from "state/api";
+import { useGetSalesQuery } from "state/api/mongoDBApi";
 import { CircularProgress, Box } from "@mui/material";
 
 const formatValue = (value) => {

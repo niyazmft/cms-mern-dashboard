@@ -6,14 +6,14 @@ import { configureStore } from "@reduxjs/toolkit";
 import globalReducer from "state";
 import { Provider } from "react-redux";
 import { setupListeners } from "@reduxjs/toolkit/query";
-import { api } from "state/api";
+import { apiMongoDB } from "state/api/mongoDBApi";
 
 const store = configureStore({
   reducer: {
     global: globalReducer,
-    [api.reducerPath]: api.reducer,
+    [apiMongoDB.reducerPath]: apiMongoDB.reducer,
   },
-  middleware: (getdefault) => getdefault().concat(api.middleware),
+  middleware: (getdefault) => getdefault().concat(apiMongoDB.middleware),
 });
 
 setupListeners(store.dispatch);

@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, CircularProgress, useTheme, Typography } from "@mui/material";
 import { ResponsivePie } from "@nivo/pie";
-import { useGetSalesQuery } from "state/api";
+import { useGetSalesQuery } from "state/api/mongoDBApi";
 
 const BreakdownChart = ({ isDashboard = false }) => {
   const { data, isLoading } = useGetSalesQuery();

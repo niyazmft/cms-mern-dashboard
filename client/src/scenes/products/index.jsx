@@ -20,7 +20,7 @@ import KeyboardArrowLeftIcon from "@mui/icons-material/KeyboardArrowLeft";
 
 import Header from "components/Header";
 import { DataGrid } from "@mui/x-data-grid";
-import { useGetProductsQuery } from "state/api";
+import { useGetProductsQuery } from "state/api/mongoDBApi";
 
 const Products = () => {
   const theme = useTheme();
