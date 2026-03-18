@@ -143,7 +143,7 @@ const Sidebar = ({
                   </Link>
                 </Box>
                 {!isNonMobile && (
-                  <IconButton onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+                  <IconButton onClick={() => setIsSidebarOpen(!isSidebarOpen)} aria-label="Close sidebar">
                     <ChevronLeft />
                   </IconButton>
                 )}
