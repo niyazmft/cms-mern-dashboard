@@ -124,12 +124,14 @@ const Sidebar = ({
               boxSizing: "border-box",
               borderWidth: isNonMobile ? 0 : "2px",
               width: drawerWidth,
+              display: "flex",
+              flexDirection: "column",
             },
           }}
         >
-          <Box width="100%" sx={{ overflowY: "auto" }}>
+          <Box width="100%" sx={{ flexGrow: 1, overflowY: "auto" }}>
             {" "}
-            {/* Add overflowY and set to "auto" for scrollable contents */}
+            {/* Add flexGrow, overflowY and set to "auto" for scrollable contents */}
             <Box m="1.5rem 2rem 2rem 3rem">
               <FlexBetween color={theme.palette.secondary.main}>
                 <Box display="flex" alignItems="center" gap="0.5rem">
@@ -199,12 +201,9 @@ const Sidebar = ({
             </List>
           </Box>
           <Box
-            position="sticky"
-            bottom={0}
             py={2}
             px={3}
             backgroundColor={theme.palette.background.alt}
-            zIndex={1}
           >
             {" "}
             {/* Fix user information box to the bottom */}
