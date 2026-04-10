@@ -51,8 +51,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 
 const allowedOrigins = [
   "http://localhost:3000",
-  "https://cms-mern-frontend.onrender.com",
-];
+  process.env.ALLOWED_ORIGIN,
+].filter(Boolean);
 
 const corsOptions = {
   origin: (origin, callback) => {
