@@ -41,14 +41,32 @@ dotenv.config();
 // Create the Express application
 const app = express();
 
+// Configure CORS
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",").map((origin) => origin.trim())
+  : ["http://localhost:3000", "https://cms-mern-frontend.onrender.com"];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  },
+  optionsSuccessStatus: 200,
+};
+
 // Configure middleware
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors());
 
 // Define routes
 app.get("/", (request, response) => {
@@ -102,7 +120,8 @@ const getCurrentDatabaseName = async () => {
 const postgresApp = express();
 const postgresPort = process.env.PG_PORT || 9001;
 
-// Middleware for parsing JSON
+// Middleware for PostgreSQL
+postgresApp.use(cors(corsOptions));
 postgresApp.use(express.json());
 
 // Define routes for PostgreSQL
