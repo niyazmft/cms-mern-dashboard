@@ -48,7 +48,26 @@ app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors());
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://cms-mern-frontend.onrender.com",
+];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  },
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 
 // Define routes
 app.get("/", (request, response) => {
@@ -104,6 +123,7 @@ const postgresPort = process.env.PG_PORT || 9001;
 
 // Middleware for parsing JSON
 postgresApp.use(express.json());
+postgresApp.use(cors(corsOptions));
 
 // Define routes for PostgreSQL
 postgresApp.use("/pg/products", PgProductRoutes);
