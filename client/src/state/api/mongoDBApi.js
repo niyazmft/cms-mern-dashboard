@@ -3,6 +3,13 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const apiMongoDB = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.REACT_APP_MONGODB_BASE_URL,
+    prepareHeaders: (headers) => {
+      const apiKey = process.env.REACT_APP_API_KEY || 'super-secret-key';
+      if (apiKey) {
+        headers.set('x-api-key', apiKey);
+      }
+      return headers;
+    },
   }),
   reducerPath: "adminApi",
   tagTypes: [
