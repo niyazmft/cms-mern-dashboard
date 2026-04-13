@@ -26,17 +26,19 @@ export const getUserPerformance = async (req, res) => {
         },
       },
       { $unwind: "$affiliateStats" },
+      {
+        $lookup: {
+          from: "transactions",
+          localField: "affiliateStats.affiliateSales",
+          foreignField: "_id",
+          as: "saleTransactions",
+        },
+      },
     ]);
 
-    const saleTransactions = await Transaction.find({
-      _id: { $in: userWithStats[0].affiliateStats.affiliateSales },
-    });
-    const filteredSalesTransaction = saleTransactions.filter(
-      (transaction) => transaction !== null
-    );
-    res
-      .status(200)
-      .json({ user: userWithStats[0], sales: filteredSalesTransaction });
+    const { saleTransactions, ...user } = userWithStats[0];
+
+    res.status(200).json({ user, sales: saleTransactions });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
