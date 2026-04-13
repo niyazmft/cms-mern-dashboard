@@ -28,24 +28,22 @@ export const getTransactions = async (req, res) => {
 
     const sortFormatted = Boolean(sort) ? generateSort() : {};
 
-    const escapeRegex = (string) => {
-      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    };
-
-    const searchRegex = new RegExp(escapeRegex(search), "i");
-    const queryFilter = {
+    const transactions = await Transaction.find({
       $or: [
-        { cost: { $regex: searchRegex } },
-        { userId: { $regex: searchRegex } },
+        { cost: { $regex: new RegExp(search, "i") } },
+        { userId: { $regex: new RegExp(search, "i") } },
       ],
-    };
-
-    const transactions = await Transaction.find(queryFilter)
+    })
       .sort(sortFormatted)
       .skip((parsedPage - 1) * parsedPageSize)
       .limit(parsedPageSize);
 
-    const total = await Transaction.countDocuments(queryFilter);
+    const total = await Transaction.countDocuments({
+      $or: [
+        { cost: { $regex: new RegExp(search, "i") } },
+        { userId: { $regex: new RegExp(search, "i") } },
+      ],
+    });
 
     res.status(200).json({ transactions, total });
   } catch (error) {
