@@ -26,19 +26,19 @@ export const getUserPerformance = async (req, res) => {
         },
       },
       { $unwind: "$affiliateStats" },
+      {
+        $lookup: {
+          from: "transactions",
+          localField: "affiliateStats.affiliateSales",
+          foreignField: "_id",
+          as: "saleTransactions",
+        },
+      },
     ]);
 
-    if (!userWithStats.length) {
-      return res.status(404).json({ message: "User performance stats not found" });
-    }
+    const { saleTransactions, ...user } = userWithStats[0];
 
-    const saleTransactions = await Transaction.find({
-      _id: { $in: userWithStats[0].affiliateStats.affiliateSales },
-    });
-
-    res
-      .status(200)
-      .json({ user: userWithStats[0], sales: saleTransactions });
+    res.status(200).json({ user, sales: saleTransactions });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
