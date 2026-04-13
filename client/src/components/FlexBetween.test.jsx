@@ -1,12 +1,12 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import FlexBetween from './FlexBetween';
 
 describe('FlexBetween component', () => {
   it('should render with correct flex styles', () => {
-    const { container } = render(<FlexBetween>Test Content</FlexBetween>);
-    const element = container.firstChild;
+    render(<FlexBetween data-testid="flex-between">Test Content</FlexBetween>);
+    const element = screen.getByTestId('flex-between');
 
     expect(element).toHaveStyle('display: flex');
     expect(element).toHaveStyle('justify-content: space-between');
