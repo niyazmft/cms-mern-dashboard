@@ -1,3 +1,0 @@
-## 2024-05-24 - Add ARIA Labels to Icon-Only Buttons
-**Learning:** Found a specific pattern in the Material UI implementation where `IconButton` components wrapping SVG icons (`MenuIcon`, `Search`, etc.) lack accessible names, making navigation difficult for screen readers.
-**Action:** When working with Material UI `<IconButton>` components that only contain visual icons, always ensure an `aria-label` attribute is explicitly provided to communicate the button's action to assistive technologies.
