@@ -70,7 +70,7 @@ mongoose
   .then(() => {
     app.listen(PORT);
   })
-  .catch(() => {});
+  .catch((error) => console.error(`${error} did not connect`));
 
 // Set up the PostgreSQL client and connect to the database
 const { Client } = pkg;
@@ -82,6 +82,7 @@ const getCurrentDatabaseName = async () => {
     const result = await pgClient.query("SELECT current_database()");
     return result.rows[0].current_database;
   } catch (error) {
+    console.error("Failed to get current database name:", error);
     return null;
   }
 };
@@ -110,4 +111,4 @@ pgClient
   .then(() => {
     postgresApp.listen(postgresPort);
   })
-  .catch(() => {});
+  .catch((error) => console.error("Failed to connect to PostgreSQL:", error));
