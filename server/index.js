@@ -14,26 +14,11 @@ import managementRoutes from "./routes/management.js";
 import salesRoutes from "./routes/sales.js";
 import productsRoutes from "./routes/product.js";
 
+import { verifyApiKey } from "./middleware/auth.js";
+
 // Import PostgreSQL routes
 import PgProductRoutes from "./routes/postgresRoutes/pgProduct.js";
 
-// Import data models
-import User from "./models/User.js";
-import Product from "./models/Product.js";
-import ProductStat from "./models/ProductStat.js";
-import Transaction from "./models/Transaction.js";
-import OverallStat from "./models/OverallStat.js";
-import AffiliateStat from "./models/AffiliateStat.js";
-
-// Import data
-import {
-  dataUser,
-  dataProduct,
-  dataProductStat,
-  dataTransaction,
-  dataOverallStat,
-  dataAffiliateStat,
-} from "./data/index.js";
 
 // Load environment variables
 dotenv.config();
@@ -41,24 +26,44 @@ dotenv.config();
 // Create the Express application
 const app = express();
 
+// Configure CORS
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",").map((origin) => origin.trim())
+  : ["http://localhost:3000", "https://cms-mern-frontend.onrender.com"];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  },
+  optionsSuccessStatus: 200,
+};
+
 // Configure middleware
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors());
+
+app.use(cors(corsOptions));
 
 // Define routes
 app.get("/", (request, response) => {
   response.json({ info: "You are connected to MongoDB database" });
 });
-app.use("/client", clientRoutes);
-app.use("/general", generalRoutes);
-app.use("/management", managementRoutes);
-app.use("/sales", salesRoutes);
-app.use("/products", productsRoutes);
+app.use("/client", verifyApiKey, clientRoutes);
+app.use("/general", verifyApiKey, generalRoutes);
+app.use("/management", verifyApiKey, managementRoutes);
+app.use("/sales", verifyApiKey, salesRoutes);
+app.use("/products", verifyApiKey, productsRoutes);
 
 // Set up the MongoDB connection
 const PORT = process.env.MONGO_PORT || 9000;
@@ -69,19 +74,9 @@ mongoose
     w: "majority",
   })
   .then(() => {
-    app.listen(PORT, () =>
-      console.log(`MongoDB connected and Server Port: ${PORT}`)
-    );
-
-    // Insert initial data if needed
-    // Product.insertMany(dataProduct);
-    // ProductStat.insertMany(dataProductStat);
-    // User.insertMany(dataUser)
-    // Transaction.insertMany(dataTransaction);
-    // OverallStat.insertMany(dataOverallStat);
-    // AffiliateStat.insertMany(dataAffiliateStat);
+    app.listen(PORT);
   })
-  .catch((error) => console.log(`${error} did not connect`));
+  .catch((error) => console.error(`${error} did not connect`));
 
 // Set up the PostgreSQL client and connect to the database
 const { Client } = pkg;
@@ -102,11 +97,13 @@ const getCurrentDatabaseName = async () => {
 const postgresApp = express();
 const postgresPort = process.env.PG_PORT || 9001;
 
-// Middleware for parsing JSON
+// Middleware for PostgreSQL
+postgresApp.use(cors(corsOptions));
 postgresApp.use(express.json());
+postgresApp.use(cors(corsOptions));
 
 // Define routes for PostgreSQL
-postgresApp.use("/pg/products", PgProductRoutes);
+postgresApp.use("/pg/products", verifyApiKey, PgProductRoutes);
 postgresApp.get("/", async (request, response) => {
   const dbName = await getCurrentDatabaseName();
   response.json({
@@ -117,15 +114,7 @@ postgresApp.get("/", async (request, response) => {
 // Connect to PostgreSQL and log the connected database name
 pgClient
   .connect()
-  .then(async () => {
-    const dbName = await getCurrentDatabaseName();
-    if (dbName) {
-      console.log(`Connected to PostgreSQL database: ${dbName}`);
-    } else {
-      console.log("Unable to retrieve current database name.");
-    }
-    postgresApp.listen(postgresPort, () => {
-      console.log(`PostgreSQL Server is running on port: ${postgresPort}`);
-    });
+  .then(() => {
+    postgresApp.listen(postgresPort);
   })
   .catch((error) => console.error("Failed to connect to PostgreSQL:", error));
