@@ -4,7 +4,7 @@ export const apiPostgreSQL = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: process.env.REACT_APP_POSTGRESQL_BASE_URL,
     prepareHeaders: (headers) => {
-      const apiKey = process.env.REACT_APP_API_KEY || 'super-secret-key';
+      const apiKey = process.env.REACT_APP_API_KEY;
       if (apiKey) {
         headers.set('x-api-key', apiKey);
       }
