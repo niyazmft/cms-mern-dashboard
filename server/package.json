@@ -9,6 +9,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "check": "echo \"No server tests implemented yet.\"",
     "start": "node index.js",
     "dev": "nodemon index.js"
   },

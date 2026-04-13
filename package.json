@@ -1,0 +1,13 @@
+{
+  "name": "cms-mern-dashboard-root",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "check:client": "cd client && npm run check",
+    "check:server": "cd server && npm run check",
+    "check": "npm run check:server && npm run check:client"
+  }
+}

@@ -50,6 +50,10 @@ app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+
+app.use(cors(corsOptions));
+
+// Define routes
 app.get("/", (request, response) => {
   response.json({ info: "You are connected to MongoDB database" });
 });
