@@ -4,21 +4,18 @@ import ProductStat from "../models/ProductStat.js";
 // Get all products with associated stats
 export const getProducts = async (req, res) => {
   try {
-    const products = await Product.find();
+    const products = await Product.find().lean();
     const productIds = products.map((product) => String(product._id));
 
-    const stats = await ProductStat.find({ productId: { $in: productIds } });
+    const stats = await ProductStat.find({ productId: { $in: productIds } }).lean();
 
     const statsByProductId = stats.reduce((acc, stat) => {
-      if (!acc[stat.productId]) {
-        acc[stat.productId] = [];
-      }
-      acc[stat.productId].push(stat);
+      acc[stat.productId] = stat;
       return acc;
     }, {});
 
     const productsWithStats = products.map((product) => {
-      return { ...product._doc, stat: statsByProductId[String(product._id)] || [] };
+      return { ...product, stat: statsByProductId[String(product._id)] || null };
     });
 
     res.status(200).json(productsWithStats);
