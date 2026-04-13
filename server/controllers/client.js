@@ -29,7 +29,7 @@ export const getTransactions = async (req, res) => {
     const sortFormatted = Boolean(sort) ? generateSort() : {};
 
     const escapeRegex = (string) => {
-      return string.replace(/[.*+?^\$\{\}()|[\]\\]/g, "\\$&");
+      return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     };
 
     const searchRegex = new RegExp(escapeRegex(search), "i");
