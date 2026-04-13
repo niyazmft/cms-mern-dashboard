@@ -14,6 +14,8 @@ import managementRoutes from "./routes/management.js";
 import salesRoutes from "./routes/sales.js";
 import productsRoutes from "./routes/product.js";
 
+import { verifyApiKey } from "./middleware/auth.js";
+
 // Import PostgreSQL routes
 import PgProductRoutes from "./routes/postgresRoutes/pgProduct.js";
 
@@ -57,11 +59,11 @@ app.use(cors(corsOptions));
 app.get("/", (request, response) => {
   response.json({ info: "You are connected to MongoDB database" });
 });
-app.use("/client", clientRoutes);
-app.use("/general", generalRoutes);
-app.use("/management", managementRoutes);
-app.use("/sales", salesRoutes);
-app.use("/products", productsRoutes);
+app.use("/client", verifyApiKey, clientRoutes);
+app.use("/general", verifyApiKey, generalRoutes);
+app.use("/management", verifyApiKey, managementRoutes);
+app.use("/sales", verifyApiKey, salesRoutes);
+app.use("/products", verifyApiKey, productsRoutes);
 
 // Set up the MongoDB connection
 const PORT = process.env.MONGO_PORT || 9000;
@@ -101,7 +103,7 @@ postgresApp.use(express.json());
 postgresApp.use(cors(corsOptions));
 
 // Define routes for PostgreSQL
-postgresApp.use("/pg/products", PgProductRoutes);
+postgresApp.use("/pg/products", verifyApiKey, PgProductRoutes);
 postgresApp.get("/", async (request, response) => {
   const dbName = await getCurrentDatabaseName();
   response.json({
