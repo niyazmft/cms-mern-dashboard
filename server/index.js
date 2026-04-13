@@ -17,23 +17,6 @@ import productsRoutes from "./routes/product.js";
 // Import PostgreSQL routes
 import PgProductRoutes from "./routes/postgresRoutes/pgProduct.js";
 
-// Import data models
-import User from "./models/User.js";
-import Product from "./models/Product.js";
-import ProductStat from "./models/ProductStat.js";
-import Transaction from "./models/Transaction.js";
-import OverallStat from "./models/OverallStat.js";
-import AffiliateStat from "./models/AffiliateStat.js";
-
-// Import data
-import {
-  dataUser,
-  dataProduct,
-  dataProductStat,
-  dataTransaction,
-  dataOverallStat,
-  dataAffiliateStat,
-} from "./data/index.js";
 
 // Load environment variables
 dotenv.config();
@@ -41,14 +24,52 @@ dotenv.config();
 // Create the Express application
 const app = express();
 
+// Configure CORS
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",").map((origin) => origin.trim())
+  : ["http://localhost:3000", "https://cms-mern-frontend.onrender.com"];
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  },
+  optionsSuccessStatus: 200,
+};
+
 // Configure middleware
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors());
+
+const allowedOrigins = [
+  "http://localhost:3000",
+  process.env.ALLOWED_ORIGIN,
+].filter(Boolean);
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  },
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 
 // Define routes
 app.get("/", (request, response) => {
@@ -73,13 +94,6 @@ mongoose
       console.log(`MongoDB connected and Server Port: ${PORT}`)
     );
 
-    // Insert initial data if needed
-    // Product.insertMany(dataProduct);
-    // ProductStat.insertMany(dataProductStat);
-    // User.insertMany(dataUser)
-    // Transaction.insertMany(dataTransaction);
-    // OverallStat.insertMany(dataOverallStat);
-    // AffiliateStat.insertMany(dataAffiliateStat);
   })
   .catch((error) => console.log(`${error} did not connect`));
 
@@ -102,8 +116,10 @@ const getCurrentDatabaseName = async () => {
 const postgresApp = express();
 const postgresPort = process.env.PG_PORT || 9001;
 
-// Middleware for parsing JSON
+// Middleware for PostgreSQL
+postgresApp.use(cors(corsOptions));
 postgresApp.use(express.json());
+postgresApp.use(cors(corsOptions));
 
 // Define routes for PostgreSQL
 postgresApp.use("/pg/products", PgProductRoutes);
