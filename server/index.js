@@ -51,6 +51,8 @@ app.use(morgan("common"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+app.use(cors(corsOptions));
+
 // Define routes
 app.get("/", (request, response) => {
   response.json({ info: "You are connected to MongoDB database" });
@@ -70,12 +72,9 @@ mongoose
     w: "majority",
   })
   .then(() => {
-    app.listen(PORT, () =>
-      console.log(`MongoDB connected and Server Port: ${PORT}`)
-    );
-
+    app.listen(PORT);
   })
-  .catch((error) => console.log(`${error} did not connect`));
+  .catch((error) => console.error(`${error} did not connect`));
 
 // Set up the PostgreSQL client and connect to the database
 const { Client } = pkg;
@@ -113,15 +112,7 @@ postgresApp.get("/", async (request, response) => {
 // Connect to PostgreSQL and log the connected database name
 pgClient
   .connect()
-  .then(async () => {
-    const dbName = await getCurrentDatabaseName();
-    if (dbName) {
-      console.log(`Connected to PostgreSQL database: ${dbName}`);
-    } else {
-      console.log("Unable to retrieve current database name.");
-    }
-    postgresApp.listen(postgresPort, () => {
-      console.log(`PostgreSQL Server is running on port: ${postgresPort}`);
-    });
+  .then(() => {
+    postgresApp.listen(postgresPort);
   })
   .catch((error) => console.error("Failed to connect to PostgreSQL:", error));
