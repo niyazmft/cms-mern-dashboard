@@ -28,17 +28,17 @@ export const getUserPerformance = async (req, res) => {
       { $unwind: "$affiliateStats" },
     ]);
 
-    const saleTransactions = await Promise.all(
-      userWithStats[0].affiliateStats.affiliateSales.map((id) => {
-        return Transaction.findById(id);
-      })
-    );
-    const filteredSalesTransaction = saleTransactions.filter(
-      (transaction) => transaction !== null
-    );
+    if (!userWithStats.length) {
+      return res.status(404).json({ message: "User performance stats not found" });
+    }
+
+    const saleTransactions = await Transaction.find({
+      _id: { $in: userWithStats[0].affiliateStats.affiliateSales },
+    });
+
     res
       .status(200)
-      .json({ user: userWithStats[0], sales: filteredSalesTransaction });
+      .json({ user: userWithStats[0], sales: saleTransactions });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
