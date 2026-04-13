@@ -8,7 +8,7 @@ A comprehensive, high-performance Content Management System (CMS) Dashboard buil
 This dashboard is designed to serve as a central hub for marketplace and ERP integrations. It provides real-time data visualization, advanced filtering, and a modern, responsive UI.
 
 ## ✨ Key Features
-- **Dual Database Support:** Concurrent management of MongoDB (via Mongoose) and PostgreSQL (via \`pg\`).
+- **Dual Database Support:** Concurrent management of MongoDB (via Mongoose) and PostgreSQL (via `pg`).
 - **Data Visualization:** Rich, interactive charts (Bar, Line, Pie, Geography) powered by **Nivo**.
 - **State Management:** Global UI state handled by **Redux Toolkit** and server-side data fetching via **RTK Query**.
 - **Modern UI/UX:** Polished, responsive design using **Material UI (MUI)** with full Dark/Light mode support.
