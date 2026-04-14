@@ -51,6 +51,21 @@ app.use(morgan("common"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+// Set up the PostgreSQL client and connect to the database
+const { Client } = pkg;
+const pgClient = new Client(process.env.PG_URI);
+
+// Function to get the current database name
+const getCurrentDatabaseName = async () => {
+  try {
+    const result = await pgClient.query("SELECT current_database()");
+    return result.rows[0].current_database;
+  } catch (error) {
+    console.error("Failed to get current database name:", error);
+    return null;
+  }
+};
+
 // Define routes
 app.get("/", async (request, response) => {
   const dbName = await getCurrentDatabaseName();
@@ -78,20 +93,6 @@ mongoose
   })
   .catch((error) => console.log(`${error} did not connect`));
 
-// Set up the PostgreSQL client and connect to the database
-const { Client } = pkg;
-const pgClient = new Client(process.env.PG_URI);
-
-// Function to get the current database name
-const getCurrentDatabaseName = async () => {
-  try {
-    const result = await pgClient.query("SELECT current_database()");
-    return result.rows[0].current_database;
-  } catch (error) {
-    console.error("Failed to get current database name:", error);
-    return null;
-  }
-};
 
 // Connect to PostgreSQL and log the connected database name
 pgClient
