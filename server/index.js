@@ -17,7 +17,6 @@ import productsRoutes from "./routes/product.js";
 // Import PostgreSQL routes
 import PgProductRoutes from "./routes/postgresRoutes/pgProduct.js";
 
-
 // Load environment variables
 dotenv.config();
 
@@ -94,15 +93,20 @@ mongoose
   .catch((error) => console.log(`${error} did not connect`));
 
 
-// Connect to PostgreSQL and log the connected database name
-pgClient
-  .connect()
-  .then(async () => {
-    const dbName = await getCurrentDatabaseName();
-    if (dbName) {
-      console.log(`Connected to PostgreSQL database: ${dbName}`);
-    } else {
-      console.log("Unable to retrieve current database name.");
+const { Client } = pkg;
+const pgUri = process.env.PG_URI;
+
+if (pgUri) {
+  const pgClient = new Client(pgUri);
+
+  // Function to get the current database name
+  const getCurrentDatabaseName = async () => {
+    try {
+      const result = await pgClient.query("SELECT current_database()");
+      return result.rows[0].current_database;
+    } catch (error) {
+      console.error("Failed to get current database name:", error);
+      return null;
     }
   })
   .catch((error) => console.error("Failed to connect to PostgreSQL:", error));
