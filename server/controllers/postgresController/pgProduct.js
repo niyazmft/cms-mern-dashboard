@@ -106,11 +106,13 @@ export const updateProduct = async (req, res) => {
       return res.status(400).json({ message: "No new image URLs provided" });
     }
 
-    const imageUrlsString = newImageUrls.map((url) => `'${url}'`).join(", ");
-    const queryString = `UPDATE products SET image_url = array_cat(image_url, ARRAY[${imageUrlsString}]::text[]) WHERE id = $1 RETURNING *`;
+    const queryString = `UPDATE products SET image_url = array_cat(image_url, $2::text[]) WHERE id = $1 RETURNING *`;
     console.log("Actual query:", queryString);
 
-    const updatedProduct = await pool.query(queryString, [productId]);
+    const updatedProduct = await pool.query(queryString, [
+      productId,
+      newImageUrls,
+    ]);
 
     if (updatedProduct.rows.length === 0) {
       return res.status(404).json({ message: "Product not found" });
