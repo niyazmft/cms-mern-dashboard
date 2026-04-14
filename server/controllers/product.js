@@ -4,22 +4,22 @@ import ProductStat from "../models/ProductStat.js";
 // Get all products with associated stats
 export const getProducts = async (req, res) => {
   try {
-    const productsWithStats = await Product.aggregate([
-      {
-        $lookup: {
-          from: "productstats",
-          let: { productId: { $toString: "$_id" } },
-          pipeline: [
-            {
-              $match: {
-                $expr: { $eq: ["$productId", "$$productId"] },
-              },
-            },
-          ],
-          as: "stat",
-        },
-      },
-    ]);
+    const products = await Product.find();
+    const productIds = products.map((product) => product._id);
+    const stats = await ProductStat.find({ productId: { $in: productIds } });
+
+    // Optimize stat lookup using a Map for O(1) access
+    const statsMap = stats.reduce((acc, stat) => {
+      const id = stat.productId.toString();
+      if (!acc[id]) acc[id] = [];
+      acc[id].push(stat);
+      return acc;
+    }, {});
+
+    const productsWithStats = products.map((product) => {
+      const stat = statsMap[product._id.toString()] || [];
+      return { ...product._doc, stat };
+    });
 
     res.status(200).json(productsWithStats);
   } catch (error) {
