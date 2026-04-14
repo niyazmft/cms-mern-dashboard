@@ -5,13 +5,21 @@ import ProductStat from "../models/ProductStat.js";
 export const getProducts = async (req, res) => {
   try {
     const products = await Product.find();
+    const productIds = products.map((product) => product._id);
+    const stats = await ProductStat.find({ productId: { $in: productIds } });
 
-    const productsWithStats = await Promise.all(
-      products.map(async (product) => {
-        const stat = await ProductStat.find({ productId: product._id });
-        return { ...product._doc, stat };
-      })
-    );
+    // Optimize stat lookup using a Map for O(1) access
+    const statsMap = stats.reduce((acc, stat) => {
+      const id = stat.productId.toString();
+      if (!acc[id]) acc[id] = [];
+      acc[id].push(stat);
+      return acc;
+    }, {});
+
+    const productsWithStats = products.map((product) => {
+      const stat = statsMap[product._id.toString()] || [];
+      return { ...product._doc, stat };
+    });
 
     res.status(200).json(productsWithStats);
   } catch (error) {
