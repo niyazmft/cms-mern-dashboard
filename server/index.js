@@ -30,32 +30,6 @@ app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors());
-
-// Define routes
-app.get("/", (request, response) => {
-  response.json({ info: "You are connected to MongoDB database" });
-});
-app.use("/client", clientRoutes);
-app.use("/general", generalRoutes);
-app.use("/management", managementRoutes);
-app.use("/sales", salesRoutes);
-app.use("/products", productsRoutes);
-
-// Set up the MongoDB connection
-const PORT = process.env.MONGO_PORT || 9000;
-mongoose
-  .connect(process.env.MONGO_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    w: "majority",
-  })
-  .then(() => {
-    app.listen(PORT, () =>
-      console.log(`MongoDB connected and Server Port: ${PORT}`)
-    );
-  })
-  .catch((error) => console.log(`${error} did not connect`));
 
 // Set up the PostgreSQL client and connect to the database
 const { Client } = pkg;
@@ -72,34 +46,54 @@ const getCurrentDatabaseName = async () => {
   }
 };
 
-// Set up the PostgreSQL connection and routes
-const postgresApp = express();
-const postgresPort = process.env.PG_PORT || 9001;
-
-// Middleware for parsing JSON
-postgresApp.use(express.json());
+// Define routes
+app.get("/", async (request, response) => {
+  const dbName = await getCurrentDatabaseName();
+  response.json({ info: `You are connected to MongoDB database and PostgreSQL database: ${dbName}` });
+});
+app.use("/client", clientRoutes);
+app.use("/general", generalRoutes);
+app.use("/management", managementRoutes);
+app.use("/sales", salesRoutes);
+app.use("/products", productsRoutes);
 
 // Define routes for PostgreSQL
-postgresApp.use("/pg/products", PgProductRoutes);
-postgresApp.get("/", async (request, response) => {
-  const dbName = await getCurrentDatabaseName();
-  response.json({
-    info: `Connected to PostgreSQL database: ${dbName}`,
-  });
-});
+app.use("/pg/products", PgProductRoutes);
 
-// Connect to PostgreSQL and log the connected database name
-pgClient
-  .connect()
-  .then(async () => {
-    const dbName = await getCurrentDatabaseName();
-    if (dbName) {
-      console.log(`Connected to PostgreSQL database: ${dbName}`);
-    } else {
-      console.log("Unable to retrieve current database name.");
+
+// Set up the MongoDB connection
+mongoose
+  .connect(process.env.MONGO_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    w: "majority",
+  })
+  .then(() => {
+    console.log(`MongoDB connected`);
+  })
+  .catch((error) => console.log(`${error} did not connect`));
+
+
+const { Client } = pkg;
+const pgUri = process.env.PG_URI;
+
+if (pgUri) {
+  const pgClient = new Client(pgUri);
+
+  // Function to get the current database name
+  const getCurrentDatabaseName = async () => {
+    try {
+      const result = await pgClient.query("SELECT current_database()");
+      return result.rows[0].current_database;
+    } catch (error) {
+      console.error("Failed to get current database name:", error);
+      return null;
     }
-    postgresApp.listen(postgresPort, () => {
-      console.log(`PostgreSQL Server is running on port: ${postgresPort}`);
-    });
   })
   .catch((error) => console.error("Failed to connect to PostgreSQL:", error));
+
+
+const PORT = process.env.PORT || 9000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port: ${PORT}`);
+});

@@ -4,12 +4,24 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const { Pool } = pkg;
-const pool = new Pool({
-  connectionString: process.env.PG_URI,
-});
+const pgUri = process.env.PG_URI;
+
+const pool = pgUri 
+  ? new Pool({ connectionString: pgUri })
+  : null;
+
+// Helper to handle unconfigured database
+const checkPool = (res) => {
+  if (!pool) {
+    res.status(503).json({ message: "PostgreSQL database not configured" });
+    return false;
+  }
+  return true;
+};
 
 // Get all products with associated stats
 export const getProducts = async (req, res) => {
+  if (!checkPool(res)) return;
   try {
     const products = await pool.query("SELECT * FROM products");
     res.status(200).json(products.rows);
@@ -20,6 +32,7 @@ export const getProducts = async (req, res) => {
 
 // Get a product by its ID
 export const getProductById = async (req, res) => {
+  if (!checkPool(res)) return;
   try {
     const productId = req.params.productId;
 
@@ -40,6 +53,7 @@ export const getProductById = async (req, res) => {
 
 // Create a new product
 export const createProduct = async (req, res) => {
+  if (!checkPool(res)) return;
   try {
     const {
       name,
@@ -77,6 +91,7 @@ export const createProduct = async (req, res) => {
 
 // Delete a product by its ID
 export const deleteProduct = async (req, res) => {
+  if (!checkPool(res)) return;
   try {
     const productId = req.params.productId;
 
@@ -98,6 +113,7 @@ export const deleteProduct = async (req, res) => {
 
 // Update a product by its ID
 export const updateProduct = async (req, res) => {
+  if (!checkPool(res)) return;
   try {
     const productId = req.params.productId;
     const newImageUrls = req.body.image_url;
@@ -106,11 +122,13 @@ export const updateProduct = async (req, res) => {
       return res.status(400).json({ message: "No new image URLs provided" });
     }
 
-    const imageUrlsString = newImageUrls.map((url) => `'${url}'`).join(", ");
-    const queryString = `UPDATE products SET image_url = array_cat(image_url, ARRAY[${imageUrlsString}]::text[]) WHERE id = $1 RETURNING *`;
+    const queryString = `UPDATE products SET image_url = array_cat(image_url, $2::text[]) WHERE id = $1 RETURNING *`;
     console.log("Actual query:", queryString);
 
-    const updatedProduct = await pool.query(queryString, [productId]);
+    const updatedProduct = await pool.query(queryString, [
+      productId,
+      newImageUrls,
+    ]);
 
     if (updatedProduct.rows.length === 0) {
       return res.status(404).json({ message: "Product not found" });
@@ -125,6 +143,7 @@ export const updateProduct = async (req, res) => {
 
 // Update all product details
 export const updateProducts = async (req, res) => {
+  if (!checkPool(res)) return;
   try {
     const newImageUrls = req.body.image_url; // Assuming you're sending an array of URLs
 
