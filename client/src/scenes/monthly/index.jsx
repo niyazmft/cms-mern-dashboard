@@ -32,7 +32,7 @@ const Monthly = () => {
         })),
       },
     ];
-  }, [data, theme]);
+  }, [data, theme.palette.secondary]);
 
   return (
     <Box m="1.5rem 2.5rem">

@@ -76,4 +76,3 @@ This repository is protected by GitHub Rulesets. All contributions must adhere t
 - **No Secrets:** Never commit API keys, connection strings, or sensitive credentials. Use environment variables (via `.env` files) as specified in the "Building and Running" section.
 - **Validation:** Before submitting a PR, ensure you run `npm run check` from the project root to verify the integrity of both the client and server.
 - **Clean Workspace:** Ensure the repository remains clean. Avoid committing build artifacts or temporary files (e.g., `.DS_Store`, `node_modules`).
-

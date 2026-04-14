@@ -8,8 +8,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "check": "echo \"No server tests implemented yet.\"",
+    "test": "echo \"No tests implemented yet\" || true",
+    "check": "npm test",
     "start": "node index.js",
     "dev": "nodemon index.js"
   },

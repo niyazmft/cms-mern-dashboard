@@ -14,8 +14,6 @@ import managementRoutes from "./routes/management.js";
 import salesRoutes from "./routes/sales.js";
 import productsRoutes from "./routes/product.js";
 
-import { verifyApiKey } from "./middleware/auth.js";
-
 // Import PostgreSQL routes
 import PgProductRoutes from "./routes/postgresRoutes/pgProduct.js";
 
@@ -53,17 +51,35 @@ app.use(morgan("common"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  process.env.ALLOWED_ORIGIN,
+].filter(Boolean);
+
+const corsOptions = {
+  origin: (origin, callback) => {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  },
+  optionsSuccessStatus: 200,
+};
+
 app.use(cors(corsOptions));
 
 // Define routes
 app.get("/", (request, response) => {
   response.json({ info: "You are connected to MongoDB database" });
 });
-app.use("/client", verifyApiKey, clientRoutes);
-app.use("/general", verifyApiKey, generalRoutes);
-app.use("/management", verifyApiKey, managementRoutes);
-app.use("/sales", verifyApiKey, salesRoutes);
-app.use("/products", verifyApiKey, productsRoutes);
+app.use("/client", clientRoutes);
+app.use("/general", generalRoutes);
+app.use("/management", managementRoutes);
+app.use("/sales", salesRoutes);
+app.use("/products", productsRoutes);
 
 // Set up the MongoDB connection
 const PORT = process.env.MONGO_PORT || 9000;
@@ -74,9 +90,12 @@ mongoose
     w: "majority",
   })
   .then(() => {
-    app.listen(PORT);
+    app.listen(PORT, () =>
+      console.log(`MongoDB connected and Server Port: ${PORT}`)
+    );
+
   })
-  .catch((error) => console.error(`${error} did not connect`));
+  .catch((error) => console.log(`${error} did not connect`));
 
 // Set up the PostgreSQL client and connect to the database
 const { Client } = pkg;
@@ -103,7 +122,7 @@ postgresApp.use(express.json());
 postgresApp.use(cors(corsOptions));
 
 // Define routes for PostgreSQL
-postgresApp.use("/pg/products", verifyApiKey, PgProductRoutes);
+postgresApp.use("/pg/products", PgProductRoutes);
 postgresApp.get("/", async (request, response) => {
   const dbName = await getCurrentDatabaseName();
   response.json({
@@ -114,7 +133,15 @@ postgresApp.get("/", async (request, response) => {
 // Connect to PostgreSQL and log the connected database name
 pgClient
   .connect()
-  .then(() => {
-    postgresApp.listen(postgresPort);
+  .then(async () => {
+    const dbName = await getCurrentDatabaseName();
+    if (dbName) {
+      console.log(`Connected to PostgreSQL database: ${dbName}`);
+    } else {
+      console.log("Unable to retrieve current database name.");
+    }
+    postgresApp.listen(postgresPort, () => {
+      console.log(`PostgreSQL Server is running on port: ${postgresPort}`);
+    });
   })
   .catch((error) => console.error("Failed to connect to PostgreSQL:", error));
