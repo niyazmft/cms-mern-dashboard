@@ -50,9 +50,25 @@ app.use(morgan("common"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+// Set up the PostgreSQL client and connect to the database
+const { Client } = pkg;
+const pgClient = new Client(process.env.PG_URI);
+
+// Function to get the current database name
+const getCurrentDatabaseName = async () => {
+  try {
+    const result = await pgClient.query("SELECT current_database()");
+    return result.rows[0].current_database;
+  } catch (error) {
+    console.error("Failed to get current database name:", error);
+    return null;
+  }
+};
+
 // Define routes
-app.get("/", (request, response) => {
-  response.json({ info: "You are connected to MongoDB database" });
+app.get("/", async (request, response) => {
+  const dbName = await getCurrentDatabaseName();
+  response.json({ info: `You are connected to MongoDB database and PostgreSQL database: ${dbName}` });
 });
 app.use("/client", clientRoutes);
 app.use("/general", generalRoutes);
@@ -60,8 +76,11 @@ app.use("/management", managementRoutes);
 app.use("/sales", salesRoutes);
 app.use("/products", productsRoutes);
 
+// Define routes for PostgreSQL
+app.use("/pg/products", PgProductRoutes);
+
+
 // Set up the MongoDB connection
-const PORT = process.env.MONGO_PORT || 9000;
 mongoose
   .connect(process.env.MONGO_URL, {
     useNewUrlParser: true,
@@ -69,22 +88,10 @@ mongoose
     w: "majority",
   })
   .then(() => {
-    app.listen(PORT, () =>
-      console.log(`MongoDB connected and Server Port: ${PORT}`)
-    );
+    console.log(`MongoDB connected`);
   })
   .catch((error) => console.log(`${error} did not connect`));
 
-// Set up the PostgreSQL connection and routes
-const postgresApp = express();
-const postgresPort = process.env.PG_PORT || 9001;
-
-// Middleware for PostgreSQL
-postgresApp.use(cors(corsOptions));
-postgresApp.use(express.json());
-
-// Define routes for PostgreSQL
-postgresApp.use("/pg/products", PgProductRoutes);
 
 const { Client } = pkg;
 const pgUri = process.env.PG_URI;
@@ -101,36 +108,11 @@ if (pgUri) {
       console.error("Failed to get current database name:", error);
       return null;
     }
-  };
+  })
+  .catch((error) => console.error("Failed to connect to PostgreSQL:", error));
 
-  postgresApp.get("/", async (request, response) => {
-    const dbName = await getCurrentDatabaseName();
-    response.json({
-      info: `Connected to PostgreSQL database: ${dbName}`,
-    });
-  });
 
-  // Connect to PostgreSQL and log the connected database name
-  pgClient
-    .connect()
-    .then(async () => {
-      const dbName = await getCurrentDatabaseName();
-      if (dbName) {
-        console.log(`Connected to PostgreSQL database: ${dbName}`);
-      } else {
-        console.log("Unable to retrieve current database name.");
-      }
-      postgresApp.listen(postgresPort, () => {
-        console.log(`PostgreSQL Server is running on port: ${postgresPort}`);
-      });
-    })
-    .catch((error) => console.error("Failed to connect to PostgreSQL:", error));
-} else {
-  console.log("PG_URI not provided. PostgreSQL server will not start.");
-  postgresApp.get("/", (request, response) => {
-    response.status(503).json({ error: "PostgreSQL database not configured" });
-  });
-  postgresApp.listen(postgresPort, () => {
-    console.log(`PostgreSQL Server (Unconfigured) is running on port: ${postgresPort}`);
-  });
-}
+const PORT = process.env.PORT || 9000;
+app.listen(PORT, () => {
+  console.log(`Server is running on port: ${PORT}`);
+});
