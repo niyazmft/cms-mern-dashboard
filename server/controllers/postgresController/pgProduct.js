@@ -4,12 +4,24 @@ import dotenv from "dotenv";
 dotenv.config();
 
 const { Pool } = pkg;
-const pool = new Pool({
-  connectionString: process.env.PG_URI,
-});
+const pgUri = process.env.PG_URI;
+
+const pool = pgUri 
+  ? new Pool({ connectionString: pgUri })
+  : null;
+
+// Helper to handle unconfigured database
+const checkPool = (res) => {
+  if (!pool) {
+    res.status(503).json({ message: "PostgreSQL database not configured" });
+    return false;
+  }
+  return true;
+};
 
 // Get all products with associated stats
 export const getProducts = async (req, res) => {
+  if (!checkPool(res)) return;
   try {
     const products = await pool.query("SELECT * FROM products");
     res.status(200).json(products.rows);
@@ -20,6 +32,7 @@ export const getProducts = async (req, res) => {
 
 // Get a product by its ID
 export const getProductById = async (req, res) => {
+  if (!checkPool(res)) return;
   try {
     const productId = req.params.productId;
 
@@ -40,6 +53,7 @@ export const getProductById = async (req, res) => {
 
 // Create a new product
 export const createProduct = async (req, res) => {
+  if (!checkPool(res)) return;
   try {
     const {
       name,
@@ -77,6 +91,7 @@ export const createProduct = async (req, res) => {
 
 // Delete a product by its ID
 export const deleteProduct = async (req, res) => {
+  if (!checkPool(res)) return;
   try {
     const productId = req.params.productId;
 
@@ -98,6 +113,7 @@ export const deleteProduct = async (req, res) => {
 
 // Update a product by its ID
 export const updateProduct = async (req, res) => {
+  if (!checkPool(res)) return;
   try {
     const productId = req.params.productId;
     const newImageUrls = req.body.image_url;
@@ -127,6 +143,7 @@ export const updateProduct = async (req, res) => {
 
 // Update all product details
 export const updateProducts = async (req, res) => {
+  if (!checkPool(res)) return;
   try {
     const newImageUrls = req.body.image_url; // Assuming you're sending an array of URLs
 
