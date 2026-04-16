@@ -2,10 +2,8 @@ module.exports = {
   apps: [
     {
       name: 'cms-backend',
-      script: 'npm',
-      args: 'run dev',
+      script: 'index.js',
       cwd: './server',
-      instance_var: 'INSTANCE_ID',
       watch: false,
       max_restarts: 10,
       env: {
@@ -20,7 +18,6 @@ module.exports = {
       script: 'npm',
       args: 'start',
       cwd: './client',
-      instance_var: 'INSTANCE_ID',
       watch: false,
       max_restarts: 10,
       env: {

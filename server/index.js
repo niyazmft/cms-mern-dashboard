@@ -1,5 +1,4 @@
 import express from "express";
-import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -34,11 +33,12 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 app.use(express.json());
-app.use(helmet({ contentSecurityPolicy: false }));
+app.use(express.urlencoded({ extended: false }));
+app.use(helmet({
+  contentSecurityPolicy: process.env.NODE_ENV === "development" ? false : undefined,
+}));
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" }));
 app.use(morgan("common"));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
 
 app.get("/", (request, response) => {
   response.json({ info: "You are connected to the MongoDB database" });
@@ -60,7 +60,7 @@ mongoose
   })
   .catch((error) => console.log(`${error} did not connect`));
 
-const PORT = process.env.MONGO_PORT || 5002;
+const PORT = process.env.PORT || process.env.MONGO_PORT || 5002;
 app.listen(PORT, () => {
   console.log(`Server is running on port: ${PORT}`);
 });

@@ -20,11 +20,11 @@
 ## Local Deployment vs Render.com
 - **On Render.com**: Uses `MONGO_URL` and `PORT` environment variables (PORT is set by Render)
 - **Locally**: Requires backend `.env` with `MONGO_URL`, `MONGO_PORT`, `ALLOWED_ORIGINS`; frontend `.env` with `REACT_APP_MONGODB_BASE_URL`
-- **Backend port**: MongoDB API on :5002 (configured via `MONGO_PORT` in server `.env`)
+- **Backend port**: `PORT` (Render) > `MONGO_PORT` (local) > 5002 (fallback)
 - **Frontend configuration**: Points to `http://localhost:5002` by default
 
 ## Critical Architecture Notes
-- **Single Express app**: server/index.js runs one Express instance on `MONGO_PORT`
+- **Single Express app**: server/index.js runs one Express instance (`PORT` || `MONGO_PORT` || 5002)
 - **API slice**: client/src/state/api/mongoDBApi.js (RTK Query)
 - **Folder structure**:
   - `server/models/`: Mongoose schemas
