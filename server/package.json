@@ -8,7 +8,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"No tests implemented yet\" || true",
+    "test": "node tests/security.test.js && node tests/sqlInjection.test.js",
     "check": "npm test",
     "start": "node index.js",
     "dev": "nodemon index.js"
