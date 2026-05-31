@@ -1,0 +1,3 @@
+## 2024-05-31 - [Backend Performance Patterns]
+**Learning:** The backend has several endpoints that execute multiple independent queries sequentially (e.g. `getTransactions`, `getDashboardStats`). Also, some data transformations are done in-memory after fetching large collections (e.g. `getGeography`), which causes an O(N) memory complexity.
+**Action:** Always look for independent `await` calls that can be grouped into `Promise.all()`. When dealing with data reduction like counts or grouping, utilize MongoDB's aggregation pipeline (e.g. `$group`) instead of mapping large arrays in Node.js memory.
