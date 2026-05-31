@@ -10,6 +10,7 @@ import generalRoutes from "./routes/general.js";
 import managementRoutes from "./routes/management.js";
 import salesRoutes from "./routes/sales.js";
 import productsRoutes from "./routes/product.js";
+import { verifyApiKey } from "./middleware/auth.js";
 
 dotenv.config();
 
@@ -43,6 +44,7 @@ app.use(morgan("common"));
 app.get("/", (request, response) => {
   response.json({ info: "You are connected to the MongoDB database" });
 });
+app.use(verifyApiKey);
 app.use("/client", clientRoutes);
 app.use("/general", generalRoutes);
 app.use("/management", managementRoutes);
