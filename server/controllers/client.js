@@ -30,22 +30,21 @@ export const getTransactions = async (req, res) => {
     const sortFormatted = Boolean(sort) ? generateSort() : {};
     const safeSearch = escapeRegExp(search);
 
-    const transactions = await Transaction.find({
+    const searchConditions = {
       $or: [
         { cost: { $regex: new RegExp(safeSearch, "i") } },
         { userId: { $regex: new RegExp(safeSearch, "i") } },
       ],
-    })
-      .sort(sortFormatted)
-      .skip((parsedPage - 1) * parsedPageSize)
-      .limit(parsedPageSize);
+    };
 
-    const total = await Transaction.countDocuments({
-      $or: [
-        { cost: { $regex: new RegExp(safeSearch, "i") } },
-        { userId: { $regex: new RegExp(safeSearch, "i") } },
-      ],
-    });
+    // ⚡ Bolt: Execute data fetch and count queries in parallel to halve response time
+    const [transactions, total] = await Promise.all([
+      Transaction.find(searchConditions)
+        .sort(sortFormatted)
+        .skip((parsedPage - 1) * parsedPageSize)
+        .limit(parsedPageSize),
+      Transaction.countDocuments(searchConditions)
+    ]);
 
     res.status(200).json({ transactions, total });
   } catch (error) {
@@ -55,14 +54,30 @@ export const getTransactions = async (req, res) => {
 
 export const getGeography = async (req, res) => {
   try {
-    const users = await User.find();
+    // ⚡ Bolt: Push grouping to the database instead of loading all users into Node.js memory
+    // Reduces memory complexity from O(N) to O(C) where N=users and C=countries
+    const groupedCountries = await User.aggregate([
+      {
+        $match: {
+          country: { $nin: [null, ""] }
+        }
+      },
+      {
+        $group: {
+          _id: "$country",
+          count: { $sum: 1 }
+        }
+      }
+    ]);
 
-    const mappedLocations = users.reduce((acc, { country }) => {
+    const mappedLocations = groupedCountries.reduce((acc, { _id: country, count }) => {
+      if (!country) return acc;
       const countryISO3 = getCountryIso3(country);
+      if (!countryISO3) return acc;
       if (!acc[countryISO3]) {
         acc[countryISO3] = 0;
       }
-      acc[countryISO3]++;
+      acc[countryISO3] += count;
       return acc;
     }, {});
     const formattedLoaction = Object.entries(mappedLocations).map(

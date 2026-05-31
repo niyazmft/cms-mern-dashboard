@@ -20,12 +20,11 @@ export const getDashboardStats = async (req, res) => {
     const currentDay = "2021-11-15";
 
     //Recent Transactions
-    const transactions = await Transaction.find()
-      .limit(50)
-      .sort({ createdOn: -1 });
-
-    //Overall Stats
-    const overallStat = await OverallStat.find({ year: currentYear });
+    // ⚡ Bolt: Execute independent queries in parallel
+    const [transactions, overallStat] = await Promise.all([
+      Transaction.find().limit(50).sort({ createdOn: -1 }),
+      OverallStat.find({ year: currentYear })
+    ]);
 
     const {
       totalCustomers,
