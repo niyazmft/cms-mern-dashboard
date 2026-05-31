@@ -24,6 +24,13 @@ const DataGridCustomToolbar = ({ searchInput, setSearchInput, setSearch }) => {
           onChange={(e) => setSearchInput(e.target.value)}
           value={searchInput}
           variant="standard"
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              setSearch(searchInput);
+              setSearchInput("");
+            }
+          }}
           InputProps={{
             endAdornment: (
               <InputAdornment position="end">
@@ -32,6 +39,7 @@ const DataGridCustomToolbar = ({ searchInput, setSearchInput, setSearch }) => {
                     setSearch(searchInput);
                     setSearchInput("");
                   }}
+                  aria-label="Search"
                 >
                   <Search />
                 </IconButton>
