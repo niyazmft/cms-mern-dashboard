@@ -58,6 +58,11 @@ export const getGeography = async (req, res) => {
     // Reduces memory complexity from O(N) to O(C) where N=users and C=countries
     const groupedCountries = await User.aggregate([
       {
+        $match: {
+          country: { $nin: [null, ""] }
+        }
+      },
+      {
         $group: {
           _id: "$country",
           count: { $sum: 1 }
