@@ -26,6 +26,7 @@ const DataGridCustomToolbar = ({ searchInput, setSearchInput, setSearch }) => {
           variant="standard"
           onKeyDown={(e) => {
             if (e.key === "Enter") {
+              e.preventDefault();
               setSearch(searchInput);
               setSearchInput("");
             }
