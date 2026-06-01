@@ -30,22 +30,18 @@ export const getTransactions = async (req, res) => {
     const sortFormatted = Boolean(sort) ? generateSort() : {};
     const safeSearch = escapeRegExp(search);
 
-    const transactions = await Transaction.find({
+    const query = {
       $or: [
         { cost: { $regex: new RegExp(safeSearch, "i") } },
         { userId: { $regex: new RegExp(safeSearch, "i") } },
       ],
-    })
-      .sort(sortFormatted)
-      .skip((parsedPage - 1) * parsedPageSize)
-      .limit(parsedPageSize);
+    };
 
-    const total = await Transaction.countDocuments({
-      $or: [
-        { cost: { $regex: new RegExp(safeSearch, "i") } },
-        { userId: { $regex: new RegExp(safeSearch, "i") } },
-      ],
-    });
+    // Optimize: parallelize find and countDocuments queries using Promise.all
+    const [transactions, total] = await Promise.all([
+      Transaction.find(query).sort(sortFormatted).skip((parsedPage - 1) * parsedPageSize).limit(parsedPageSize),
+      Transaction.countDocuments(query)
+    ]);
 
     res.status(200).json({ transactions, total });
   } catch (error) {
