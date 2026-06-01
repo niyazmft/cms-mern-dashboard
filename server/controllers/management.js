@@ -17,6 +17,7 @@ export const getUserPerformance = async (req, res) => {
 
     const userWithStats = await User.aggregate([
       { $match: { _id: new mongoose.Types.ObjectId(id) } },
+      { $project: { password: 0 } },
       {
         $lookup: {
           from: "affiliatestats",
