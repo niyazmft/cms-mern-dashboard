@@ -55,14 +55,22 @@ export const getTransactions = async (req, res) => {
 
 export const getGeography = async (req, res) => {
   try {
-    const users = await User.find();
+    // Optimize: offload grouping to MongoDB to avoid O(N) memory complexity
+    const countryCounts = await User.aggregate([
+      {
+        $group: {
+          _id: "$country",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
 
-    const mappedLocations = users.reduce((acc, { country }) => {
-      const countryISO3 = getCountryIso3(country);
+    const mappedLocations = countryCounts.reduce((acc, { _id, count }) => {
+      const countryISO3 = getCountryIso3(_id);
       if (!acc[countryISO3]) {
         acc[countryISO3] = 0;
       }
-      acc[countryISO3]++;
+      acc[countryISO3] += count;
       return acc;
     }, {});
     const formattedLoaction = Object.entries(mappedLocations).map(
