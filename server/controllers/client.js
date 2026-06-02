@@ -14,7 +14,7 @@ export const getCustomers = async (req, res) => {
 
 export const getTransactions = async (req, res) => {
   try {
-    let { page = 1, pageSize = 20, sort = null, search = "" } = req.query;
+    const { page = 1, pageSize = 20, sort = null, search = "" } = req.query;
 
     const generateSort = () => {
       try {
