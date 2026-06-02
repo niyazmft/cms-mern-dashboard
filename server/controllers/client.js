@@ -55,14 +55,31 @@ export const getTransactions = async (req, res) => {
 
 export const getGeography = async (req, res) => {
   try {
-    const users = await User.find();
+    // Optimize: offload grouping to MongoDB to avoid O(N) memory complexity
+    const countryCounts = await User.aggregate([
+      {
+        $match: {
+          country: { $nin: [null, ""] }
+        }
+      },
+      {
+        $group: {
+          _id: "$country",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
 
-    const mappedLocations = users.reduce((acc, { country }) => {
-      const countryISO3 = getCountryIso3(country);
+    if (!countryCounts || !countryCounts.length) {
+      return res.status(404).json({ message: "No geographical data found" });
+    }
+
+    const mappedLocations = countryCounts.reduce((acc, { _id, count }) => {
+      const countryISO3 = getCountryIso3(_id);
       if (!acc[countryISO3]) {
         acc[countryISO3] = 0;
       }
-      acc[countryISO3]++;
+      acc[countryISO3] += count;
       return acc;
     }, {});
     const formattedLoaction = Object.entries(mappedLocations).map(
