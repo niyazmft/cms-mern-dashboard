@@ -58,12 +58,21 @@ export const getGeography = async (req, res) => {
     // Optimize: offload grouping to MongoDB to avoid O(N) memory complexity
     const countryCounts = await User.aggregate([
       {
+        $match: {
+          country: { $nin: [null, ""] }
+        }
+      },
+      {
         $group: {
           _id: "$country",
           count: { $sum: 1 },
         },
       },
     ]);
+
+    if (!countryCounts || !countryCounts.length) {
+      return res.status(404).json({ message: "No geographical data found" });
+    }
 
     const mappedLocations = countryCounts.reduce((acc, { _id, count }) => {
       const countryISO3 = getCountryIso3(_id);
