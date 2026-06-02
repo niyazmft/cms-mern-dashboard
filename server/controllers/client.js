@@ -14,26 +14,39 @@ export const getCustomers = async (req, res) => {
 
 export const getTransactions = async (req, res) => {
   try {
-    const { page = 1, pageSize = 20, sort = null, search = "" } = req.query;
+    let { page = 1, pageSize = 20, sort = null, search = "" } = req.query;
 
     const generateSort = () => {
-      const sortParsed = JSON.parse(sort);
-      const sortFormatted = {
-        [sortParsed.field]: sortParsed.sort === "asc" ? 1 : -1,
-      };
-      return sortFormatted;
+      try {
+        if (typeof sort !== "string") return {};
+        const sortParsed = JSON.parse(sort);
+        if (typeof sortParsed !== "object" || sortParsed === null || Array.isArray(sortParsed)) return {};
+        if (typeof sortParsed.field !== "string" || typeof sortParsed.sort !== "string") return {};
+
+        const sortFormatted = {
+          [sortParsed.field]: sortParsed.sort === "asc" ? 1 : -1,
+        };
+        return sortFormatted;
+      } catch (e) {
+        return {};
+      }
     };
 
     const parsedPage = Math.max(1, parseInt(page));
     const parsedPageSize = Math.max(1, parseInt(pageSize));
 
     const sortFormatted = Boolean(sort) ? generateSort() : {};
+
+    // Ensure search is a string to prevent NoSQL injection via object
+    if (typeof search !== "string") {
+      search = String(search);
+    }
     const safeSearch = escapeRegExp(search);
 
     const transactions = await Transaction.find({
       $or: [
-        { cost: { $regex: new RegExp(safeSearch, "i") } },
-        { userId: { $regex: new RegExp(safeSearch, "i") } },
+        { cost: { $regex: safeSearch, $options: "i" } },
+        { userId: { $regex: safeSearch, $options: "i" } },
       ],
     })
       .sort(sortFormatted)
@@ -42,8 +55,8 @@ export const getTransactions = async (req, res) => {
 
     const total = await Transaction.countDocuments({
       $or: [
-        { cost: { $regex: new RegExp(safeSearch, "i") } },
-        { userId: { $regex: new RegExp(safeSearch, "i") } },
+        { cost: { $regex: safeSearch, $options: "i" } },
+        { userId: { $regex: safeSearch, $options: "i" } },
       ],
     });
 
