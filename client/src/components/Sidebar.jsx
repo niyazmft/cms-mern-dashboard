@@ -201,9 +201,12 @@ const Sidebar = ({
             </List>
           </Box>
           <Box
+            position="sticky"
+            bottom={0}
             py={2}
             px={3}
             backgroundColor={theme.palette.background.alt}
+            zIndex={1}
           >
             {" "}
             {/* Fix user information box to the bottom */}
