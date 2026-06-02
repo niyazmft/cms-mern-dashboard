@@ -1,3 +1,6 @@
 ## 2024-06-01 - DataGrid Custom Toolbar Accessibility and Interaction
 **Learning:** In Material-UI DataGrid custom toolbars, standard TextFields used for search often lack `onKeyDown` handlers for the Enter key, making keyboard-only navigation frustrating. Additionally, the adjacent search icon button often lacks an `aria-label`, hindering screen reader users.
 **Action:** When implementing custom search inputs, always explicitly add `onKeyDown` listeners for the 'Enter' key and ensure adjacent icon-only buttons have descriptive `aria-label` attributes for screen reader accessibility.
+## 2024-06-03 - [Missing Accessible Names on Search Actions and Submissions]
+**Learning:** Found a specific pattern in custom Search/TextField integrations where the adjacent submit `IconButton` had no accessible name. This resulted in a poor screen reader experience where the button is completely unannounced. Furthermore, relying purely on the `IconButton` without an `onKeyDown` (for Enter key) forces users into pointer-only navigation, breaking the expected form-submission keyboard pattern.
+**Action:** When implementing custom inputs with `InputAdornment` and `IconButton` in Material-UI, always ensure the `IconButton` has an `aria-label`, and explicitly add `onKeyDown` to the `TextField` to allow Enter-key submission.
