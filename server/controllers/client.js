@@ -1,7 +1,6 @@
 import User from "../models/User.js";
 import Transaction from "../models/Transaction.js";
 import getCountryIso3 from "country-iso-2-to-3";
-import escapeRegExp from "../utils/escapeRegExp.js";
 
 export const getCustomers = async (req, res) => {
   try {
@@ -28,12 +27,11 @@ export const getTransactions = async (req, res) => {
     const parsedPageSize = Math.max(1, parseInt(pageSize));
 
     const sortFormatted = Boolean(sort) ? generateSort() : {};
-    const safeSearch = escapeRegExp(search);
 
     const transactions = await Transaction.find({
       $or: [
-        { cost: { $regex: new RegExp(safeSearch, "i") } },
-        { userId: { $regex: new RegExp(safeSearch, "i") } },
+        { cost: { $regex: new RegExp(search, "i") } },
+        { userId: { $regex: new RegExp(search, "i") } },
       ],
     })
       .sort(sortFormatted)
@@ -42,8 +40,8 @@ export const getTransactions = async (req, res) => {
 
     const total = await Transaction.countDocuments({
       $or: [
-        { cost: { $regex: new RegExp(safeSearch, "i") } },
-        { userId: { $regex: new RegExp(safeSearch, "i") } },
+        { cost: { $regex: new RegExp(search, "i") } },
+        { userId: { $regex: new RegExp(search, "i") } },
       ],
     });
 
@@ -55,31 +53,14 @@ export const getTransactions = async (req, res) => {
 
 export const getGeography = async (req, res) => {
   try {
-    // Optimize: offload grouping to MongoDB to avoid O(N) memory complexity
-    const countryCounts = await User.aggregate([
-      {
-        $match: {
-          country: { $nin: [null, ""] }
-        }
-      },
-      {
-        $group: {
-          _id: "$country",
-          count: { $sum: 1 },
-        },
-      },
-    ]);
+    const users = await User.find();
 
-    if (!countryCounts || !countryCounts.length) {
-      return res.status(404).json({ message: "No geographical data found" });
-    }
-
-    const mappedLocations = countryCounts.reduce((acc, { _id, count }) => {
-      const countryISO3 = getCountryIso3(_id);
+    const mappedLocations = users.reduce((acc, { country }) => {
+      const countryISO3 = getCountryIso3(country);
       if (!acc[countryISO3]) {
         acc[countryISO3] = 0;
       }
-      acc[countryISO3] += count;
+      acc[countryISO3]++;
       return acc;
     }, {});
     const formattedLoaction = Object.entries(mappedLocations).map(

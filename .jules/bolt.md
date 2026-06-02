@@ -1,3 +1,3 @@
-## 2024-06-01 - [MongoDB Aggregation for Grouping]
-**Learning:** For large datasets like geographic user distributions, fetching all users in-memory with `User.find()` to perform a `.reduce()` causes O(N) memory complexity.
-**Action:** Use MongoDB's `$group` in an `aggregate` pipeline (`$sum: 1`) to offload the grouping and counting to the database, resulting in O(1) memory usage in Node.js.
+## 2026-06-02 - Optimize getUserPerformance N+1 queries
+
+Replaced an iterative sequence of database calls inside `Promise.all` with a single `$in` query. Fetching related models within `map` array functions triggers O(n) roundtrips to the database leading to severe degradation for large volumes of related records. The Mongo `$in` operator easily batches queries fetching all associated items simultaneously.
