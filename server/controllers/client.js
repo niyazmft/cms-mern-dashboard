@@ -38,10 +38,8 @@ export const getTransactions = async (req, res) => {
     const sortFormatted = Boolean(sort) ? generateSort() : {};
 
     // Ensure search is a string to prevent NoSQL injection via object
-    if (typeof search !== "string") {
-      search = String(search);
-    }
-    const safeSearch = escapeRegExp(search);
+    const searchString = typeof search === "string" ? search : "";
+    const safeSearch = escapeRegExp(searchString);
 
     const transactions = await Transaction.find({
       $or: [
