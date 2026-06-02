@@ -27,11 +27,12 @@ export const getTransactions = async (req, res) => {
     const parsedPageSize = Math.max(1, parseInt(pageSize));
 
     const sortFormatted = Boolean(sort) ? generateSort() : {};
+    const safeSearch = escapeRegExp(search);
 
     const transactions = await Transaction.find({
       $or: [
-        { cost: { $regex: new RegExp(search, "i") } },
-        { userId: { $regex: new RegExp(search, "i") } },
+        { cost: { $regex: new RegExp(safeSearch, "i") } },
+        { userId: { $regex: new RegExp(safeSearch, "i") } },
       ],
     })
       .sort(sortFormatted)
@@ -40,8 +41,8 @@ export const getTransactions = async (req, res) => {
 
     const total = await Transaction.countDocuments({
       $or: [
-        { cost: { $regex: new RegExp(search, "i") } },
-        { userId: { $regex: new RegExp(search, "i") } },
+        { cost: { $regex: new RegExp(safeSearch, "i") } },
+        { userId: { $regex: new RegExp(safeSearch, "i") } },
       ],
     });
 
