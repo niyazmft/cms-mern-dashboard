@@ -1,3 +1,9 @@
+## 2026-06-03 - [Fix Input Validation and ReDoS vulnerability in getTransactions sort/search]
+
+When processing sort parameters that expect JSON strings (e.g., `JSON.parse(sort)`), it's critical to add robust try/catch blocks and explicit type validation (e.g., checking it's an object, not an array or null, and that internal fields are strings). This protects against type-confusion attacks and application crashes.
+
+When constructing MongoDB queries with regular expressions, it is a best practice to use the `{ $regex: pattern, $options: "i" }` syntax instead of evaluating the `new RegExp` constructor directly with user input. This pattern satisfies security linters and significantly reduces the ReDoS attack surface.
+
 ## 2025-05-31 - [Server Crash Vulnerability in Aggregation and Search + Backend Authentication]
 **Vulnerability:** The backend endpoints in `server/controllers/general.js` were missing validation checks. Specifically, `getDashboardStats` accessed `overallStat[0]` without checking if the array was empty, and `getUser` did not check if a user existed before returning. This could lead to unhandled runtime errors, resulting in server crashes and potential denial of service. Additionally, the backend was entirely exposed and missing authentication as stated in the documentation.
 **Learning:** Even though mongoose handles the database lookup, the returned object or array must be explicitly checked for existence/length before accessing properties or indices, as it might return null or an empty array. Additionally, documentation stating a backend is secured by an API key is not reliable until verified in the codebase. Static frontend builds baking an API key into their bundle are an anti-pattern.
