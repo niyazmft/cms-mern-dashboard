@@ -26,7 +26,12 @@ export const getUserPerformance = async (req, res) => {
         },
       },
       { $unwind: "$affiliateStats" },
+      { $project: { password: 0 } }
     ]);
+
+    if (!userWithStats.length) {
+      return res.status(404).json({ message: "User performance stats not found" });
+    }
 
     const saleTransactions = await Transaction.find({
       _id: { $in: userWithStats[0].affiliateStats.affiliateSales },
