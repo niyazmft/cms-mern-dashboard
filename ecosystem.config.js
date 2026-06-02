@@ -27,7 +27,7 @@ module.exports = {
     },
     {
       name: 'cms-frontend',
-      script: './node_modules/.bin/react-scripts',
+      script: 'node_modules/react-scripts/bin/react-scripts.js',
       args: 'start',
       cwd: './client',
       watch: false,
@@ -35,8 +35,6 @@ module.exports = {
       restart_delay: 5000,
       min_uptime: '30s',
       kill_timeout: 5000,
-      wait_ready: true,
-      listen_timeout: 60000,
       env: {
         NODE_ENV: 'development',
         PORT: 3002,
