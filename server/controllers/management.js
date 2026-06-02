@@ -34,6 +34,7 @@ export const getUserPerformance = async (req, res) => {
           as: "saleTransactions",
         },
       },
+      { $project: { password: 0 } }
     ]);
 
     if (!userWithStats.length) {
