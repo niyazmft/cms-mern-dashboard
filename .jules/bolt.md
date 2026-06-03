@@ -13,3 +13,7 @@ When refactoring variables, do not accidentally remove input validation or escap
 ## 2026-06-03 - CI build fixes
 
 When doing performance optimization analysis that requires third-party dependencies (like `mongodb-memory-server`), take care to avoid saving these to the application's `package.json` file. Unintended side-effects include overwriting pre-existing `package.json` properties (such as `"scripts": { "check": "npm test" }`) resulting in CI build failures across the pipeline. Always keep benchmarking scripts external to tracked files or stash changes.
+
+## 2026-06-03 - CI lint fixes
+
+When using `React.useMemo` or other hooks with complex dependencies, assigning nested object properties inside the dependency array triggers the `exhaustive-deps` ESLint rule error (`complex expression in the dependency array. Extract it to a separate variable`). By decoupling it into an independent constant, it allows static checks and complies with strict CI warnings-as-errors (`CI=true`). Also remove unused dependencies, as this causes build failures in stricter environments.
