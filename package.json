@@ -1,0 +1,21 @@
+{
+  "name": "cms-mern-dashboard-root",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "scripts": {
+    "check:client": "cd client && npm run check",
+    "check:server": "cd server && npm run check",
+    "check": "npm run check:server && npm run check:client",
+    "dev": "pm2 start ecosystem.config.js",
+    "dev:stop": "pm2 delete ecosystem.config.js",
+    "dev:restart": "pm2 restart ecosystem.config.js",
+    "dev:logs": "pm2 logs",
+    "dev:logs:backend": "pm2 logs cms-backend",
+    "dev:logs:frontend": "pm2 logs cms-frontend",
+    "dev:monitor": "pm2 monit",
+    "dev:status": "pm2 status"
+  }
+}
