@@ -31,7 +31,6 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "check": "npm test -- --watchAll=false --passWithNoTests \u0026\u0026 npm run build",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
