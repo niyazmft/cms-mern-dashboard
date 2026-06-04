@@ -1,8 +1,8 @@
 blank_issues_enabled: false
 contact_links:
   - name: Questions & Discussions
-    url: https://github.com/your-username/cms-mern-dashboard/discussions
+    url: https://github.com/niyazmft/cms-mern-dashboard/discussions
     about: Please ask and answer questions here.
   - name: Security Issues
-    url: https://github.com/your-username/cms-mern-dashboard/security/advisories
+    url: https://github.com/niyazmft/cms-mern-dashboard/security/advisories
     about: Please report security vulnerabilities here.
