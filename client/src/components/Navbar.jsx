@@ -44,7 +44,7 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
       <Toolbar sx={{ justifyContent: "space-between" }}>
         {/* Left Side*/}
         <FlexBetween>
-          <IconButton onClick={() => setIsSidebarOpen(!isSidebarOpen)} aria-label="Toggle navigation menu">
+          <IconButton onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
             <MenuIcon />
           </IconButton>
           <FlexBetween
@@ -54,7 +54,7 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
             p="0.1rem 1.5rem"
           >
             <InputBase placeholder="Search..." />
-            <IconButton aria-label="Search">
+            <IconButton>
               <Search />
             </IconButton>
           </FlexBetween>
@@ -62,14 +62,14 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
 
         {/* Right Side*/}
         <FlexBetween gap="1.5rem">
-          <IconButton onClick={() => dispatch(setMode())} aria-label={`Switch to ${theme.palette.mode === "dark" ? "light" : "dark"} mode`}>
+          <IconButton onClick={() => dispatch(setMode())}>
             {theme.palette.mode === "dark" ? (
               <DarkModeOutlined sx={{ fontsize: "25px" }} />
             ) : (
               <LightModeOutlined sx={{ fontsize: "25px" }} />
             )}
           </IconButton>
-          <IconButton aria-label="Settings">
+          <IconButton>
             <SettingsOutlined sx={{ fontsize: "25px" }} />
           </IconButton>
           <FlexBetween>

@@ -8,6 +8,7 @@ import "react-datepicker/dist/react-datepicker.css";
 const Monthly = () => {
   const { data } = useGetSalesQuery();
   const theme = useTheme();
+  const secondary = theme.palette.secondary;
 
   const formattedData = React.useMemo(() => {
     if (!data) return [];
@@ -17,7 +18,7 @@ const Monthly = () => {
     return [
       {
         id: "Total Sales",
-        color: theme.palette.secondary.main,
+        color: secondary.main,
         data: monthlyData.map(({ month, totalSales }) => ({
           x: month,
           y: totalSales,
@@ -25,14 +26,14 @@ const Monthly = () => {
       },
       {
         id: "Total Units",
-        color: theme.palette.secondary[600],
+        color: secondary[600],
         data: monthlyData.map(({ month, totalUnits }) => ({
           x: month,
           y: totalUnits,
         })),
       },
     ];
-  }, [data, theme.palette.secondary]);
+  }, [data, secondary]);
 
   return (
     <Box m="1.5rem 2.5rem">

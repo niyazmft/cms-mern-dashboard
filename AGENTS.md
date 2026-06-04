@@ -56,7 +56,7 @@ Logs include:
 3. **Install dependencies**:
    - `cd server && npm install`
    - `cd client && npm install`
-4. **Backend setup**: 
+4. **Backend setup**:
    - Create `.env` with: `MONGO_URL`, `MONGO_PORT` (5002), `ALLOWED_ORIGINS`, `API_KEY`
 5. **Frontend setup**:
    - Create `.env` with: `REACT_APP_MONGODB_BASE_URL`, `REACT_APP_API_KEY`
