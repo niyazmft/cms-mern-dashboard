@@ -17,8 +17,7 @@ If you discover a security vulnerability in this project, please report it respo
 
 Instead, please report security vulnerabilities via:
 
-- Email: [your-email@example.com] (replace with actual contact)
-- Or GitHub Security Advisories (if enabled for this repository)
+- GitHub Security Advisories (if enabled for this repository)
 
 ### What to Include
 
