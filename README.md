@@ -22,4 +22,13 @@ This dashboard is designed to serve as a central hub for marketplace and ERP int
 - **Validation:** Automated CI via GitHub Actions.
 
 ## 📖 Getting Started
-For detailed instructions on building, running, and contributing to this project—including engineering standards and mandatory validation rules—please refer to the [**GEMINI.md**](./GEMINI.md) file.
+For detailed instructions on building, running, and contributing to this project—including engineering standards and mandatory validation rules—please refer to the [**AGENTS.md**](./AGENTS.md) file.
+
+## 🤝 Contributing
+We welcome contributions! Please read our [Contributing Guide](./CONTRIBUTING.md) and [Code of Conduct](./CODE_OF_CONDUCT.md) before submitting a Pull Request.
+
+## 📄 License
+This project is licensed under the [MIT License](./LICENSE).
+
+## 🔐 Security
+For security-related information, please see our [Security Policy](./SECURITY.md).
