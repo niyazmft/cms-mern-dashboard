@@ -41,22 +41,20 @@ export const getTransactions = async (req, res) => {
     const searchString = typeof search === "string" ? search : "";
     const safeSearch = escapeRegExp(searchString);
 
-    const transactions = await Transaction.find({
+    const queryConditions = {
       $or: [
         { cost: { $regex: safeSearch, $options: "i" } },
         { userId: { $regex: safeSearch, $options: "i" } },
       ],
-    })
-      .sort(sortFormatted)
-      .skip((parsedPage - 1) * parsedPageSize)
-      .limit(parsedPageSize);
+    };
 
-    const total = await Transaction.countDocuments({
-      $or: [
-        { cost: { $regex: safeSearch, $options: "i" } },
-        { userId: { $regex: safeSearch, $options: "i" } },
-      ],
-    });
+    const [transactions, total] = await Promise.all([
+      Transaction.find(queryConditions)
+        .sort(sortFormatted)
+        .skip((parsedPage - 1) * parsedPageSize)
+        .limit(parsedPageSize),
+      Transaction.countDocuments(queryConditions)
+    ]);
 
     res.status(200).json({ transactions, total });
   } catch (error) {

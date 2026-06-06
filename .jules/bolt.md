@@ -17,3 +17,7 @@ When doing performance optimization analysis that requires third-party dependenc
 ## 2026-06-03 - CI lint fixes
 
 When using `React.useMemo` or other hooks with complex dependencies, assigning nested object properties inside the dependency array triggers the `exhaustive-deps` ESLint rule error (`complex expression in the dependency array. Extract it to a separate variable`). By decoupling it into an independent constant, it allows static checks and complies with strict CI warnings-as-errors (`CI=true`). Also remove unused dependencies, as this causes build failures in stricter environments.
+
+## 2026-06-03 - Parallelize Independent Database Queries
+**Learning:** Sequential await calls for independent queries (like `.find()` and `.countDocuments()` on the same collection) add unnecessary round-trip latency to the database. Even when one depends on pagination, they can often be executed concurrently.
+**Action:** Use `Promise.all` to batch independent queries. Additionally, extracting repeated query conditions (like `$or` clauses) into a shared `queryConditions` variable avoids duplication and ensures consistency between the batched queries.
