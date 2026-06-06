@@ -14,6 +14,8 @@ import managementRoutes from "./routes/management.js";
 import salesRoutes from "./routes/sales.js";
 import productsRoutes from "./routes/product.js";
 
+import { validateApiKey } from "./middleware/auth.js";
+
 // Import PostgreSQL routes
 import PgProductRoutes from "./routes/postgresRoutes/pgProduct.js";
 
@@ -36,7 +38,7 @@ app.use(cors());
 app.get("/", (request, response) => {
   response.json({ info: "You are connected to MongoDB database" });
 });
-app.use("/client", clientRoutes);
+app.use("/client", validateApiKey, clientRoutes);
 app.use("/general", generalRoutes);
 app.use("/management", managementRoutes);
 app.use("/sales", salesRoutes);
