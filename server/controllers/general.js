@@ -4,8 +4,15 @@ import Transaction from "../models/Transaction.js";
 
 export const getUser = async (req, res) => {
   try {
+    const apiKey = req.headers['x-api-key'] || req.get('x-api-key');
+    if (!apiKey || apiKey !== process.env.API_KEY) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
     const { id } = req.params;
-    const user = await User.findById(id);
+    const user = await User.findById(id).select("-password");
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
     res.status(200).json(user);
   } catch (error) {
     res.status(404).json({ message: error.message });
