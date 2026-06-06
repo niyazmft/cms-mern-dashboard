@@ -1,3 +1,0 @@
-## 2024-06-06 - [Global IconButton Accessibility]
-**Learning:** Found a pattern of missing `aria-label` attributes on `IconButton` components, particularly in global layout structures like `Navbar.jsx` and `Sidebar.jsx`. These buttons often rely entirely on icons (e.g., Menu, Settings, Theme toggle) which makes them inaccessible to screen readers. There were also minor typos in styling props (e.g., `fontsize` instead of `fontSize`, `felx` instead of `flex`).
-**Action:** When working on navigation or layout components in this app, ensure all icon-only interactive elements (like `IconButton`) have descriptive `aria-label` attributes. Double-check Material-UI sx prop spelling to ensure styles are correctly applied.
