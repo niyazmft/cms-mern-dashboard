@@ -54,7 +54,7 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
             p="0.1rem 1.5rem"
           >
             <InputBase placeholder="Search..." inputProps={{ "aria-label": "search" }} />
-            <IconButton aria-label="Submit search">
+            <IconButton aria-label="Search icon">
               <Search />
             </IconButton>
           </FlexBetween>
@@ -69,12 +69,15 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
               <LightModeOutlined sx={{ fontSize: "25px" }} />
             )}
           </IconButton>
-          <IconButton aria-label="Settings">
+          <IconButton aria-label="Settings (coming soon)" disabled>
             <SettingsOutlined sx={{ fontSize: "25px" }} />
           </IconButton>
           <FlexBetween>
             <Button
               onClick={handleClick}
+              aria-haspopup="true"
+              aria-expanded={isOpen}
+              aria-label="User profile menu"
               sx={{
                 display: "flex",
                 justifyContent: "space-between",
