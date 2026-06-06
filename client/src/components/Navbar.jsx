@@ -44,7 +44,7 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
       <Toolbar sx={{ justifyContent: "space-between" }}>
         {/* Left Side*/}
         <FlexBetween>
-          <IconButton onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
+          <IconButton aria-label="Toggle sidebar" onClick={() => setIsSidebarOpen(!isSidebarOpen)}>
             <MenuIcon />
           </IconButton>
           <FlexBetween
@@ -53,8 +53,8 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
             gap="3rem"
             p="0.1rem 1.5rem"
           >
-            <InputBase placeholder="Search..." />
-            <IconButton>
+            <InputBase placeholder="Search..." inputProps={{ "aria-label": "search" }} />
+            <IconButton aria-label="Search icon">
               <Search />
             </IconButton>
           </FlexBetween>
@@ -62,21 +62,24 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
 
         {/* Right Side*/}
         <FlexBetween gap="1.5rem">
-          <IconButton onClick={() => dispatch(setMode())}>
+          <IconButton aria-label="Toggle theme" onClick={() => dispatch(setMode())}>
             {theme.palette.mode === "dark" ? (
-              <DarkModeOutlined sx={{ fontsize: "25px" }} />
+              <DarkModeOutlined sx={{ fontSize: "25px" }} />
             ) : (
-              <LightModeOutlined sx={{ fontsize: "25px" }} />
+              <LightModeOutlined sx={{ fontSize: "25px" }} />
             )}
           </IconButton>
-          <IconButton>
-            <SettingsOutlined sx={{ fontsize: "25px" }} />
+          <IconButton aria-label="Settings (coming soon)" disabled>
+            <SettingsOutlined sx={{ fontSize: "25px" }} />
           </IconButton>
           <FlexBetween>
             <Button
               onClick={handleClick}
+              aria-haspopup="true"
+              aria-expanded={isOpen}
+              aria-label="User profile menu"
               sx={{
-                display: "felx",
+                display: "flex",
                 justifyContent: "space-between",
                 alignItems: "center",
                 textTransform: "none",
@@ -110,7 +113,7 @@ const Navbar = ({ user, isSidebarOpen, setIsSidebarOpen }) => {
               <ArrowDropDownOutlined
                 sx={{
                   color: theme.palette.secondary[300],
-                  fontsize: "25px",
+                  fontSize: "25px",
                 }}
               />
             </Button>
